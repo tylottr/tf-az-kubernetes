@@ -1,3 +1,7 @@
+output "kubernetes_service_principal" {
+  value = azuread_service_principal.main.application_id
+}
+
 output "kubernetes_cluster_name" {
   value = azurerm_kubernetes_cluster.main.name
 }
@@ -17,4 +21,8 @@ output "kubeconfig" {
 
 output "acr_name" {
   value = azurerm_container_registry.main[0].name
+}
+
+output "acr_id" {
+  value = azurerm_container_registry.main[0].id
 }
