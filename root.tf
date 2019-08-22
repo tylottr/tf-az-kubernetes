@@ -48,8 +48,12 @@ provider "null" {
   version = "~> 2.1.0"
 }
 
+provider "local" {
+  version = "~> 1.3.0"
+}
+
 # Data
-data "azurerm_client_config" "current" {
+data "azurerm_client_config" "main" {
 }
 
 resource "random_integer" "main" {
@@ -112,7 +116,7 @@ resource "azurerm_container_registry" "main" {
   admin_enabled = false
 }
 
-## K8s Role Assignments
+## Kubernetes Role Assignments
 resource "azurerm_role_assignment" "main_acr" {
   count                = var.enable_acr ? 1 : 0
   scope                = azurerm_container_registry.main[count.index].id
@@ -126,7 +130,7 @@ resource "azurerm_role_assignment" "main_management" {
   principal_id         = azuread_service_principal.main.id
 }
 
-## K8s Compute (Azure-level)
+## Kubernetes Compute (Azure-level)
 resource "azurerm_kubernetes_cluster" "main" {
   name                = "${local.resource_name}-aks"
   resource_group_name = azurerm_resource_group.main.name
@@ -162,26 +166,22 @@ resource "azurerm_kubernetes_cluster" "main" {
   lifecycle {
     ignore_changes = [agent_pool_profile[0].count]
   }
+}
+
+resource "local_file" "main_config" {
+  filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
+  sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
 
   provisioner "local-exec" {
     command = <<EOS
-#!/bin/bash
-# Create Kubeconfig from raw config
-mkdir -p ~/.kube/clusters/;
-clusterFile=~/.kube/clusters/${azurerm_kubernetes_cluster.main.name};
-
-cat << EOF > $clusterFile
-${azurerm_kubernetes_cluster.main.kube_config_raw}
-EOF
-
 %{if var.aks_cluster_enable_cert_manager}
-kubectl apply --kubeconfig $clusterFile -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml;
+kubectl apply --kubeconfig .terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml;
 %{endif}
 EOS
   }
 }
 
-## K8s Compute Environment (K8s-level) - Helm
+## Kubernetes Compute Environment (Kubernetes-level) - Helm
 ### Helm setup
 resource "kubernetes_service_account" "main_helm_tiller" {
   metadata {
@@ -275,8 +275,8 @@ azureClientSecret: '${azuread_service_principal_password.main.value}'
 azureClusterName: ${azurerm_kubernetes_cluster.main.name}
 azureNodeResourceGroup: ${azurerm_kubernetes_cluster.main.node_resource_group}
 azureResourceGroup: ${azurerm_resource_group.main.name}
-azureSubscriptionID: ${data.azurerm_client_config.current.subscription_id}
-azureTenantID: ${data.azurerm_client_config.current.tenant_id}
+azureSubscriptionID: ${data.azurerm_client_config.main.subscription_id}
+azureTenantID: ${data.azurerm_client_config.main.tenant_id}
 azureVMType: AKS
 cloudProvider: azure
 rbac:
@@ -322,10 +322,16 @@ webhook:
 EOF
   ]
 
+  provisioner "local-exec" {
+    command = <<EOS
+kubectl apply --kubeconfig .terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+EOS
+  }
+
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
-## K8s Compute Environment (K8s-level) - Storage
+## Kubernetes Compute Environment (Kubernetes-level) - Storage
 resource "kubernetes_storage_class" "main_azure" {
   // Default storage classes do not expand. Create these in the cluster as part of the deployment.
   for_each = {
@@ -348,5 +354,54 @@ resource "kubernetes_storage_class" "main_azure" {
   parameters = {
     kind               = "managed"
     storageaccounttype = each.value
+  }
+}
+
+## Kubernetes Service Accounts
+### Full Access
+resource "kubernetes_service_account" "main_full_access" {
+  metadata {
+    name      = "cluster-full-access"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "main_full_access" {
+  metadata {
+    name = "cluster-full-access"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.main_full_access.metadata[0].name
+    namespace = kubernetes_service_account.main_full_access.metadata[0].namespace
+  }
+}
+
+### Read Only
+resource "kubernetes_service_account" "main_read_only" {
+  metadata {
+    name      = "cluster-read-only"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "main_read_only" {
+  metadata {
+    name = "cluster-read-only"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "view"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.main_read_only.metadata[0].name
+    namespace = kubernetes_service_account.main_read_only.metadata[0].namespace
   }
 }
