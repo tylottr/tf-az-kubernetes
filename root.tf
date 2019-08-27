@@ -171,14 +171,6 @@ resource "azurerm_kubernetes_cluster" "main" {
 resource "local_file" "main_config" {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
-
-  provisioner "local-exec" {
-    command = <<EOS
-%{if var.aks_cluster_enable_cert_manager}
-kubectl apply --kubeconfig .terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml;
-%{endif}
-EOS
-  }
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
