@@ -130,4 +130,3 @@ locals {
     "Criticality" = var.tag_criticality
   }
 }
-
