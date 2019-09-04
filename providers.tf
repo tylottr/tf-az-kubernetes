@@ -45,9 +45,9 @@ provider "random" {
 }
 
 provider "null" {
-  version = "~> 2.1.0"
+  version = "~> 2.1"
 }
 
 provider "local" {
-  version = "~> 1.3.0"
+  version = "~> 1.3"
 }
