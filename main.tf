@@ -165,29 +165,34 @@ resource "helm_release" "main_ingress" {
 
   values = [
     <<EOF
+rbac:
+  create: true
 controller:
-  autoscaling:
+  replicaCount: 2
+  metrics:
     enabled: true
-    maxReplicas: 5
-    minReplicas: 2
-    targetCPUUtilizationPercentage: 90
-    targetMemoryUtilizationPercentage: 90
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
   config:
     enable-modsecurity: "true"
     enable-owasp-modsecurity-crs: "true"
   defaultBackendService: ${var.aks_cluster_custom_backend_service != "" ? var.aks_cluster_custom_backend_service : ""}
-  replicaCount: 2
   resources:
     limits:
-      cpu: 150m
-      memory: 320Mi
+      cpu: 500m
+      memory: 768Mi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    maxReplicas: 5
+    minReplicas: 2
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
 defaultBackend:
   enabled: ${var.aks_cluster_custom_backend_service != "" ? "false" : "true"}
-rbac:
-  create: true
     EOF
   ]
 
@@ -204,6 +209,8 @@ resource "helm_release" "main_autoscaler" {
 
   values = [
     <<EOF
+rbac:
+  create: true
 autoscalingGroups:
 - maxSize: ${var.aks_cluster_worker_max_count}
   minSize: ${var.aks_cluster_worker_min_count}
@@ -217,8 +224,6 @@ azureSubscriptionID: ${data.azurerm_client_config.main.subscription_id}
 azureTenantID: ${data.azurerm_client_config.main.tenant_id}
 azureVMType: AKS
 cloudProvider: azure
-rbac:
-  create: true
 resources:
   limits:
     cpu: 50m
@@ -243,8 +248,6 @@ resource "helm_release" "main_cert_manager" {
 
   values = [
     <<EOF
-cainjector:
-  enabled: false
 global:
   rbac:
     create: true
@@ -256,6 +259,8 @@ resources:
     cpu: 10m
     memory: 32Mi
 webhook:
+  enabled: false
+cainjector:
   enabled: false
 EOF
   ]
