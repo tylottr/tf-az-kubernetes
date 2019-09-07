@@ -49,6 +49,7 @@ These are the variables used along with their defaults. For any without a value 
 |service_policy_password_expiry|The amount of time for a service policy passwords to be valid|43800h|
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|
+|aks_cluster_kubernetes_version|Version of Kubernetes to use in the cluster|[NOT REQUIRED]|
 |aks_cluster_worker_min_count|Minimum number of workers in the AKS cluster|1|
 |aks_cluster_worker_max_count|Maximum number of workers in the AKS cluster|5|
 |aks_cluster_worker_size|Size of workers in the AKS cluster|Standard_B2ms|

@@ -21,7 +21,7 @@ resource "azuread_service_principal" "main" {
   application_id = azuread_application.main.application_id
 
   provisioner "local-exec" {
-    command = "sleep 30"
+    command = "sleep 45"
   }
 }
 
@@ -35,7 +35,7 @@ resource "azuread_service_principal_password" "main" {
   end_date_relative    = var.service_policy_password_expiry
 
   provisioner "local-exec" {
-    command = "sleep 30"
+    command = "sleep 45"
   }
 }
 
@@ -83,12 +83,15 @@ resource "azurerm_kubernetes_cluster" "main" {
   location            = azurerm_resource_group.main.location
   tags                = local.tags
 
+  kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
+
   agent_pool_profile {
     name            = "nodepool1"
     count           = var.aks_cluster_worker_min_count
     vm_size         = var.aks_cluster_worker_size
     os_disk_size_gb = var.aks_cluster_worker_disk_size
     os_type         = "Linux"
+    type            = "AvailabilitySet"
   }
 
   dns_prefix = "${local.resource_name}-aks"
@@ -110,7 +113,10 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   lifecycle {
-    ignore_changes = [agent_pool_profile[0].count]
+    ignore_changes = [
+      agent_pool_profile[0].count,
+      kubernetes_version
+    ]
   }
 }
 

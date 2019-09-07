@@ -63,6 +63,12 @@ variable "acr_sku" {
 
 ## AKS Cluster
 ### Azure-level
+variable "aks_cluster_kubernetes_version" {
+  description = "Version of Kubernetes to use in the cluster"
+  type        = string
+  default     = ""
+}
+
 variable "aks_cluster_worker_min_count" {
   description = "Minimum number of workers in the AKS cluster"
   type        = number
