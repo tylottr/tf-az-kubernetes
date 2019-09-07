@@ -196,6 +196,8 @@ defaultBackend:
     EOF
   ]
 
+  timeout = 600
+
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
