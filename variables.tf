@@ -1,5 +1,4 @@
-### Variables ###
-## Global ##
+# Global
 variable "location" {
   description = "The location of this deployment"
   type        = string
@@ -48,8 +47,8 @@ variable "service_policy_password_expiry" {
   default     = "43800h" # 5 Years
 }
 
-## Resource-specific ##
-# Azure Container Registry #
+# Resource-specific
+## Azure Container Registry
 variable "enable_acr" {
   description = "Flag used to enable ACR"
   type        = bool
@@ -62,8 +61,8 @@ variable "acr_sku" {
   default     = "Basic"
 }
 
-# AKS Cluster #
-# Azure-level
+## AKS Cluster
+### Azure-level
 variable "aks_cluster_worker_min_count" {
   description = "Minimum number of workers in the AKS cluster"
   type        = number
@@ -88,7 +87,7 @@ variable "aks_cluster_worker_disk_size" {
   default     = 30
 }
 
-# K8s-level
+### K8s-level
 variable "aks_cluster_custom_backend_service" {
   description = "The custom backend service in the format NAMESPACE/SERVICE"
   type        = string
@@ -119,14 +118,14 @@ variable "aks_cluster_cert_manager_chart_version" {
   default     = "v0.9.1"
 }
 
-## Locals ##
+# Locals
 locals {
   resource_name = var.environment_prefix != "" ? "${lower(var.environment_prefix)}-${lower(var.resource_prefix)}" : lower(var.resource_prefix)
 
   tags = {
-    "Owner"       = var.tag_owner
-    "Environment" = var.tag_environment
-    "Application" = var.tag_application
-    "Criticality" = var.tag_criticality
+    Owner       = var.tag_owner
+    Environment = var.tag_environment
+    Application = var.tag_application
+    Criticality = var.tag_criticality
   }
 }
