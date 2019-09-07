@@ -5,15 +5,15 @@ terraform {
 
 # Providers
 provider "azurerm" {
-  version = "~> 1.32.0"
+  version = "~> 1.33.0"
 }
 
 provider "azuread" {
-  version = "~> 0.5.0"
+  version = "~> 0.6.0"
 }
 
 provider "kubernetes" {
-  version = "~> 1.8.0"
+  version = "~> 1.9.0"
   host    = azurerm_kubernetes_cluster.main.kube_config[0].host
   client_certificate = base64decode(
     azurerm_kubernetes_cluster.main.kube_config[0].client_certificate,
