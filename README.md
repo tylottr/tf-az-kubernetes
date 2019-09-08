@@ -22,7 +22,7 @@ Prerequisites
 
 Prior to deployment you need the following:
 * [azcli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-* [terraform](https://www.terraform.io/) - 0.12.6
+* [terraform](https://www.terraform.io/) - 0.12
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 * [helm](https://helm.sh/)
 
