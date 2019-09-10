@@ -186,17 +186,29 @@ controller:
   defaultBackendService: ${var.aks_cluster_custom_backend_service != "" ? var.aks_cluster_custom_backend_service : ""}
   resources:
     limits:
-      cpu: 500m
+      cpu: 1000m
       memory: 768Mi
     requests:
-      cpu: 200m
+      cpu: 500m
       memory: 512Mi
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - nginx-ingress
+          topologyKey: kubernetes.io/hostname
+        weight: 100
   autoscaling:
     enabled: true
-    maxReplicas: 5
+    maxReplicas: 4
     minReplicas: 2
-    targetCPUUtilizationPercentage: 75
-    targetMemoryUtilizationPercentage: 75
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 90
 defaultBackend:
   enabled: ${var.aks_cluster_custom_backend_service != "" ? "false" : "true"}
     EOF
