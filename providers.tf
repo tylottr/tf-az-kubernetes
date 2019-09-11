@@ -1,19 +1,19 @@
 # Config
 terraform {
-  required_version = ">= 0.12.0"
+  required_version = ">= 0.12"
 }
 
 # Providers
 provider "azurerm" {
-  version = "~> 1.33.0"
+  version = "~> 1.33"
 }
 
 provider "azuread" {
-  version = "~> 0.6.0"
+  version = "~> 0.6"
 }
 
 provider "kubernetes" {
-  version = "~> 1.9.0"
+  version = "~> 1.9"
   host    = azurerm_kubernetes_cluster.main.kube_config[0].host
   client_certificate = base64decode(
     azurerm_kubernetes_cluster.main.kube_config[0].client_certificate,
@@ -25,7 +25,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "~> 0.10.0"
+  version = "~> 0.10"
 
   service_account = kubernetes_service_account.main_helm_tiller.metadata[0].name
   kubernetes {
