@@ -5,12 +5,6 @@ variable "location" {
   default     = "UK South"
 }
 
-variable "environment_prefix" {
-  description = "A prefix for the environment this resource belongs in, used to generate the resource names"
-  type        = string
-  default     = ""
-}
-
 variable "resource_prefix" {
   description = "A prefix for the name of the resource, used to generate the resource names"
   type        = string
@@ -126,8 +120,6 @@ variable "aks_cluster_cert_manager_chart_version" {
 
 # Locals
 locals {
-  resource_name = var.environment_prefix != "" ? "${lower(var.environment_prefix)}-${lower(var.resource_prefix)}" : lower(var.resource_prefix)
-
   tags = {
     Owner       = var.tag_owner
     Environment = var.tag_environment

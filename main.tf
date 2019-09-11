@@ -14,7 +14,7 @@ resource "azuread_application" "main" {
   name                       = "${var.tag_environment} ${var.tag_application} Kubernetes"
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = false
-  homepage                   = "https://${local.resource_name}-aks"
+  homepage                   = "https://${var.resource_prefix}-aks"
 }
 
 resource "azuread_service_principal" "main" {
@@ -41,7 +41,7 @@ resource "azuread_service_principal_password" "main" {
 
 ## Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "${local.resource_name}-aks-rg"
+  name     = "${var.resource_prefix}-aks-rg"
   location = var.location
   tags     = local.tags
 }
@@ -50,7 +50,7 @@ resource "azurerm_resource_group" "main" {
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
   name = replace(
-    "${local.resource_name}acr${random_integer.main.result}",
+    "${var.resource_prefix}acr${random_integer.main.result}",
     "-",
     "",
   )
@@ -78,7 +78,7 @@ resource "azurerm_role_assignment" "main_management" {
 
 ## Kubernetes Compute (Azure-level)
 resource "azurerm_kubernetes_cluster" "main" {
-  name                = "${local.resource_name}-aks"
+  name                = "${var.resource_prefix}-aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -94,7 +94,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     type            = "AvailabilitySet"
   }
 
-  dns_prefix = "${local.resource_name}-aks"
+  dns_prefix = "${var.resource_prefix}-aks"
 
   network_profile {
     network_plugin     = "kubenet"
