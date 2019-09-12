@@ -258,7 +258,7 @@ EOF
 }
 
 resource "helm_release" "main_cert_manager" {
-  name  = "cert-manager"
+  name = "cert-manager"
 
   repository = data.helm_repository.jetstack.metadata[0].name
   chart      = "cert-manager"
