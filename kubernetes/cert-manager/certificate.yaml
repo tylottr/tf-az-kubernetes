@@ -1,19 +1,19 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: example-com
+  name: this-cluster-local
 spec:
-  secretName: example-com
+  secretName: this-cluster-local
   dnsNames:
-  - www.example.com
-  - www2.example.com
+  - www.this-cluster.local
+  - www2.this-cluster.local
   acme:
     config:
     - http01:
         ingressClass: nginx
       domains:
-      - www.example.com
-      - www2.example.com
+      - www.this-cluster.local
+      - www2.this-cluster.local
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer

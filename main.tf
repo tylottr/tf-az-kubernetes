@@ -258,7 +258,6 @@ EOF
 }
 
 resource "helm_release" "main_cert_manager" {
-  count = var.aks_cluster_enable_cert_manager ? 1 : 0
   name  = "cert-manager"
 
   repository = data.helm_repository.jetstack.metadata[0].name

@@ -7,12 +7,12 @@ The environment deployed contains the following resources:
 * A service policy to allow K8s to access the necessary Azure resources
 * OPTIONAL: An Azure Container Registry for storing images
 * A bootstrapped Kubernetes cluster 
-  * A new kubeconfig file is created at ~/.kube/$YOUR_CLUSTER_NAME
-  * Helm is set up in the cluster with the stable repository and the Jetstack repository (assuming cert-manager is used)
+  * A cluster-admin and cluster-read-only service account created for RBAC
+  * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
     * stable/nginx-ingress
     * stable/cluster-autoscaler
-    * OPTIONAL: jetstack/cert-manager
+    * jetstack/cert-manager
   * Storage classes for Azure standard and premium storage
 
 Following deployment there are some additional steps that need to be performed that are specific to the application - see the Post Deployment section.
@@ -56,7 +56,6 @@ These are the variables used along with their defaults. For any without a value 
 |aks_cluster_custom_backend_service|The custom backend service in the format NAMESPACE/SERVICE|[NOT REQUIRED]|
 |aks_cluster_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.14.0|
 |aks_cluster_cluster_autoscaler_chart_version|The chart version for the cluster-autoscaler Helm chart|3.2.0|
-|aks_cluster_enable_cert_manager|Flag used to enable cert-manager|true|
 |aks_cluster_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.9.1|
 
 Outputs
@@ -80,15 +79,10 @@ Below describes the steps to deploy this template.
 
 1. Set variables for the deployment
     * Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables)
-2. Log into Azure with `az login`
-    * If using a Service Principal instead, you can use the `--service-principal` flag
-3. Select the correct subscription with `az account set --subscription $ARM_SUBSCRIPTION_ID`
-4. Initialise Terraform with `terraform init`
-    * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html)
-        * When using remote state, use the `-backend=true` flag in combination with the `-backend-config=var=val` arguments. The [azurerm](https://www.terraform.io/docs/backends/types/azurerm.html) backend documentation is here for an example.
-5. Generate a plan with `terraform plan -out tf.plan`
-6. Apply the plan with `terraform apply tf.plan`
-    * This command will not prompt prior to running changes
+2. Log into Azure with `az login` and set your subscription with `az account set --subscription $ARM_SUBSCRIPTION_ID`
+3. Initialise Terraform with `terraform init`
+    * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
+4. Generate a plan with `terraform plan -out tf.plan` and apply it with `terraform apply tf.plan`
 
 In the event the deployment needs to be destroyed, you can run `terraform destroy`
 
@@ -109,15 +103,7 @@ Certificates are handled by cert-manager to provide valid SSL certificates, whic
 * Certificates are namespaced
     * Certificates can support multiple names, assuming DNS is configured properly
 
-#### RBAC
-
-RBAC is enabled for clusters created with this template. Using the example rbac.yaml file will create a Service Account for a cluster-fullaccess and cluster-readonly with associated bindings. 
-* Tokens can be retrieved from the associated secret for the service account
-
-#### Kube Router
-
-Kube-router allows the usage of routing policies and other features.
-* To deploy for network policies, you can run `kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kube-router-firewall-daemonset.yaml`
+Manifests under [kubernetes/cert-manager](./kubernetes/cert-manager) can be used as a guideline assuming DNS is set up for the endpoint.
 
 Useful Links
 ------------
@@ -126,4 +112,3 @@ Useful Links
 * [Azure Documentation](https://docs.microsoft.com/en-us/azure/)
 * [Kubernetes Documentation](https://kubernetes.io/docs/home/)
 * [cert-manager Repository](https://github.com/jetstack/cert-manager)
-* [kube-router Repository](https://github.com/cloudnativelabs/kube-router)
