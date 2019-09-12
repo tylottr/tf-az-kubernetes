@@ -108,5 +108,5 @@ variable "aks_cluster_cert_manager_chart_version" {
 
 # Locals
 locals {
-  
+
 }
