@@ -45,6 +45,7 @@ These are the variables used along with their defaults. For any without a value 
 |tag_environment|Sets the value of this tag|Test|
 |tag_application|Sets the value of this tag|Kubernetes|
 |tag_criticality|Sets the value of this tag|3|
+|tags_additional|A map containing any additional tags|{}|
 |service_policy_password_expiry|The amount of time for a service policy passwords to be valid|43800h|
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|

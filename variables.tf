@@ -35,6 +35,12 @@ variable "tag_criticality" {
   default     = "3"
 }
 
+variable "tags_additional" {
+  description = "A map containing any additional tags"
+  type        = map(string)
+  default     = {}
+}
+
 variable "service_policy_password_expiry" {
   description = "The amount of time for a service policy passwords to be valid"
   type        = string
@@ -120,10 +126,12 @@ variable "aks_cluster_cert_manager_chart_version" {
 
 # Locals
 locals {
-  tags = {
+  global_tags = {
     Owner       = var.tag_owner
     Environment = var.tag_environment
     Application = var.tag_application
     Criticality = var.tag_criticality
   }
+
+  tags = merge(local.global_tags, var.tags_additional)
 }
