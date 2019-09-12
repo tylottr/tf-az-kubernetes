@@ -43,7 +43,7 @@ resource "azuread_service_principal_password" "main" {
 resource "azurerm_resource_group" "main" {
   name     = "${var.resource_prefix}-aks-rg"
   location = var.location
-  tags     = local.tags
+  tags     = var.tags
 }
 
 ## Storage
@@ -56,7 +56,7 @@ resource "azurerm_container_registry" "main" {
   )
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = local.tags
+  tags                = var.tags
 
   sku           = var.acr_sku
   admin_enabled = false
@@ -81,7 +81,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   name                = "${var.resource_prefix}-aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = local.tags
+  tags                = var.tags
 
   kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
 

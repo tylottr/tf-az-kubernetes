@@ -11,28 +11,10 @@ variable "resource_prefix" {
   default     = "kubernetes"
 }
 
-variable "tag_owner" {
-  description = "Sets the value of this tag"
-  type        = string
-  default     = "Terraform"
-}
-
-variable "tag_environment" {
-  description = "Sets the value of this tag"
-  type        = string
-  default     = "Test"
-}
-
-variable "tag_application" {
-  description = "Sets the value of this tag"
-  type        = string
-  default     = "Kubernetes"
-}
-
-variable "tag_criticality" {
-  description = "Sets the value of this tag"
-  type        = string
-  default     = "3"
+variable "tags" {
+  description = "Tags given to the resources created by this template"
+  type        = map(string)
+  default     = {}
 }
 
 variable "tags_additional" {
@@ -126,12 +108,5 @@ variable "aks_cluster_cert_manager_chart_version" {
 
 # Locals
 locals {
-  global_tags = {
-    Owner       = var.tag_owner
-    Environment = var.tag_environment
-    Application = var.tag_application
-    Criticality = var.tag_criticality
-  }
-
-  tags = merge(local.global_tags, var.tags_additional)
+  
 }
