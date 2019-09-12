@@ -291,6 +291,8 @@ kubectl apply --kubeconfig .terraform/.kube/clusters/${azurerm_kubernetes_cluste
 EOS
   }
 
+  timeout = 600
+
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
