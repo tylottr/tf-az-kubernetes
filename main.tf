@@ -11,7 +11,7 @@ resource "random_integer" "main" {
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
 resource "azuread_application" "main" {
-  name                       = "${var.tag_environment} ${var.tag_application} Kubernetes"
+  name                       = "${var.resource_prefix}-aks Kubernetes"
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = false
   homepage                   = "https://${var.resource_prefix}-aks"
