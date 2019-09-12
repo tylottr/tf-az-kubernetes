@@ -40,7 +40,7 @@ These are the variables used along with their defaults. For any without a value 
 |Variable|Description|Default|
 |-|-|-|
 |location|The location of this deployment|UK South|
-|resource_prefix|A prefix for the name of the resource, used to generate the resource names|Kubernetes|
+|resource_prefix|A prefix for the name of the resource, used to generate the resource names|kubernetes|
 |tag_owner|Sets the value of this tag|Terraform|
 |tag_environment|Sets the value of this tag|Test|
 |tag_application|Sets the value of this tag|Kubernetes|

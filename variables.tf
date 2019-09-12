@@ -8,7 +8,7 @@ variable "location" {
 variable "resource_prefix" {
   description = "A prefix for the name of the resource, used to generate the resource names"
   type        = string
-  default     = "Kubernetes"
+  default     = "kubernetes"
 }
 
 variable "tag_owner" {
