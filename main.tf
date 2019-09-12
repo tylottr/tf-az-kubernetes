@@ -25,13 +25,13 @@ resource "azuread_service_principal" "main" {
   }
 }
 
-resource "random_string" "main_secret" {
+resource "random_password" "main_secret" {
   length = 40
 }
 
 resource "azuread_service_principal_password" "main" {
   service_principal_id = azuread_service_principal.main.id
-  value                = random_string.main_secret.result
+  value                = random_password.main_secret.result
   end_date_relative    = var.service_policy_password_expiry
 
   provisioner "local-exec" {
