@@ -17,12 +17,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "tags_additional" {
-  description = "A map containing any additional tags"
-  type        = map(string)
-  default     = {}
-}
-
 variable "service_policy_password_expiry" {
   description = "The amount of time for a service policy passwords to be valid"
   type        = string
