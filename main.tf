@@ -231,19 +231,19 @@ resource "helm_release" "main_autoscaler" {
     <<EOF
 rbac:
   create: true
+azureTenantID: ${data.azurerm_client_config.main.tenant_id}
+azureSubscriptionID: ${data.azurerm_client_config.main.subscription_id}
+azureResourceGroup: ${azurerm_resource_group.main.name}
+azureClusterName: ${azurerm_kubernetes_cluster.main.name}
+azureNodeResourceGroup: ${azurerm_kubernetes_cluster.main.node_resource_group}
+azureVMType: AKS
+cloudProvider: azure
+azureClientID: ${azuread_application.main.application_id}
+azureClientSecret: '${azuread_service_principal_password.main.value}'
 autoscalingGroups:
 - maxSize: ${var.aks_cluster_worker_max_count}
   minSize: ${var.aks_cluster_worker_min_count}
   name: ${azurerm_kubernetes_cluster.main.agent_pool_profile[0].name}
-azureClientID: ${azuread_application.main.application_id}
-azureClientSecret: '${azuread_service_principal_password.main.value}'
-azureClusterName: ${azurerm_kubernetes_cluster.main.name}
-azureNodeResourceGroup: ${azurerm_kubernetes_cluster.main.node_resource_group}
-azureResourceGroup: ${azurerm_resource_group.main.name}
-azureSubscriptionID: ${data.azurerm_client_config.main.subscription_id}
-azureTenantID: ${data.azurerm_client_config.main.tenant_id}
-azureVMType: AKS
-cloudProvider: azure
 resources:
   limits:
     cpu: 50m
