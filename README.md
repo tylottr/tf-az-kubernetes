@@ -7,6 +7,7 @@ The environment deployed contains the following resources:
 * A service policy to allow K8s to access the necessary Azure resources
 * OPTIONAL: An Azure Container Registry for storing images
 * A bootstrapped Kubernetes cluster 
+  * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
   * A cluster-admin and cluster-read-only service account created for RBAC
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
@@ -65,7 +66,6 @@ This template will output the following information:
 |kubernetes_cluster_name|The name of the kubernetes cluster|
 |kubernetes_rg_name|The name of the kubernetes cluster resource group|
 |kubernetes_node_rg_name|The name of the kubernetes cluster's node resource group|
-|kubeconfig|The full kubeconfig for the new cluster|
 |acr_name|The name of the ACR|
 |acr_id|The ID of the ACR|
 
