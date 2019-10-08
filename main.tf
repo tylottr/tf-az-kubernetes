@@ -1,8 +1,8 @@
 # Data
-data "azurerm_client_config" "main" {
+data azurerm_client_config main {
 }
 
-resource "random_integer" "main" {
+resource random_integer main {
   min = 0
   max = 9999
 }
@@ -10,44 +10,44 @@ resource "random_integer" "main" {
 # Resources
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
-resource "azuread_application" "main" {
+resource azuread_application main {
   name                       = "${var.resource_prefix}-aks Kubernetes"
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = false
   homepage                   = "https://${var.resource_prefix}-aks"
 }
 
-resource "azuread_service_principal" "main" {
+resource azuread_service_principal main {
   application_id = azuread_application.main.application_id
 
-  provisioner "local-exec" {
+  provisioner local-exec {
     command = "sleep 45"
   }
 }
 
-resource "random_password" "main_secret" {
+resource random_password main_secret {
   length = 40
 }
 
-resource "azuread_service_principal_password" "main" {
+resource azuread_service_principal_password main {
   service_principal_id = azuread_service_principal.main.id
   value                = random_password.main_secret.result
   end_date_relative    = var.service_policy_password_expiry
 
-  provisioner "local-exec" {
+  provisioner local-exec {
     command = "sleep 45"
   }
 }
 
 ## Resource Group
-resource "azurerm_resource_group" "main" {
+resource azurerm_resource_group main {
   name     = "${var.resource_prefix}-aks-rg"
   location = var.location
   tags     = var.tags
 }
 
 ## Storage
-resource "azurerm_container_registry" "main" {
+resource azurerm_container_registry main {
   count = var.enable_acr ? 1 : 0
   name = replace(
     "${var.resource_prefix}acr${random_integer.main.result}",
@@ -63,21 +63,21 @@ resource "azurerm_container_registry" "main" {
 }
 
 ## Kubernetes Role Assignments
-resource "azurerm_role_assignment" "main_acr" {
+resource azurerm_role_assignment main_acr {
   count                = var.enable_acr ? 1 : 0
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
   principal_id         = azuread_service_principal.main.id
 }
 
-resource "azurerm_role_assignment" "main_management" {
+resource azurerm_role_assignment main_management {
   scope                = azurerm_resource_group.main.id
   role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.main.id
 }
 
 ## Kubernetes Compute (Azure-level)
-resource "azurerm_kubernetes_cluster" "main" {
+resource azurerm_kubernetes_cluster main {
   name                = "${var.resource_prefix}-aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
@@ -120,7 +120,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 }
 
-resource "local_file" "main_config" {
+resource local_file main_config {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
   file_permission   = "0500"
@@ -128,14 +128,14 @@ resource "local_file" "main_config" {
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
 ### Helm setup
-resource "kubernetes_service_account" "main_helm_tiller" {
+resource kubernetes_service_account main_helm_tiller {
   metadata {
     name      = "tiller"
     namespace = "kube-system"
   }
 }
 
-resource "kubernetes_cluster_role_binding" "main_helm_tiller" {
+resource kubernetes_cluster_role_binding main_helm_tiller {
   metadata {
     name = "tiller"
   }
@@ -151,18 +151,18 @@ resource "kubernetes_cluster_role_binding" "main_helm_tiller" {
   }
 }
 
-data "helm_repository" "stable" {
+data helm_repository stable {
   name = "stable"
   url  = "https://kubernetes-charts.storage.googleapis.com"
 }
 
-data "helm_repository" "jetstack" {
+data helm_repository jetstack {
   name = "jetstack"
   url  = "https://charts.jetstack.io"
 }
 
 ### Cluster Utilities
-resource "helm_release" "main_ingress" {
+resource helm_release main_ingress {
   name = "nginx-ingress"
 
   repository = data.helm_repository.stable.metadata[0].name
@@ -220,7 +220,7 @@ defaultBackend:
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
-resource "helm_release" "main_autoscaler" {
+resource helm_release main_autoscaler {
   name = "cluster-autoscaler"
 
   repository = data.helm_repository.stable.metadata[0].name
@@ -258,7 +258,7 @@ EOF
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
-resource "helm_release" "main_cert_manager" {
+resource helm_release main_cert_manager {
   name = "cert-manager"
 
   repository = data.helm_repository.jetstack.metadata[0].name
@@ -285,7 +285,7 @@ cainjector:
 EOF
   ]
 
-  provisioner "local-exec" {
+  provisioner local-exec {
     command = <<EOS
 kubectl apply --kubeconfig .terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
 EOS
@@ -297,7 +297,7 @@ EOS
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Storage
-resource "kubernetes_storage_class" "main_azure" {
+resource kubernetes_storage_class main_azure {
   // Default storage classes do not expand. Create these in the cluster as part of the deployment.
   for_each = {
     "azure-standard" = "Standard_LRS"
@@ -324,14 +324,14 @@ resource "kubernetes_storage_class" "main_azure" {
 
 ## Kubernetes Service Accounts
 ### Full Access
-resource "kubernetes_service_account" "main_full_access" {
+resource kubernetes_service_account main_full_access {
   metadata {
     name      = "cluster-full-access"
     namespace = "kube-system"
   }
 }
 
-resource "kubernetes_cluster_role_binding" "main_full_access" {
+resource kubernetes_cluster_role_binding main_full_access {
   metadata {
     name = "cluster-full-access"
   }
@@ -348,14 +348,14 @@ resource "kubernetes_cluster_role_binding" "main_full_access" {
 }
 
 ### Read Only
-resource "kubernetes_service_account" "main_read_only" {
+resource kubernetes_service_account main_read_only {
   metadata {
     name      = "cluster-read-only"
     namespace = "kube-system"
   }
 }
 
-resource "kubernetes_cluster_role_binding" "main_read_only" {
+resource kubernetes_cluster_role_binding main_read_only {
   metadata {
     name = "cluster-read-only"
   }
