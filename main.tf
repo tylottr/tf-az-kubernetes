@@ -123,6 +123,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 resource "local_file" "main_config" {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
+  file_permission   = "0500"
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
