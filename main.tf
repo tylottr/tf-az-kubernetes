@@ -7,6 +7,21 @@ resource random_integer main {
   max = 999
 }
 
+resource tls_private_key main {
+  algorithm = "RSA"
+}
+
+resource local_file main_ssh_public {
+  filename          = ".terraform/.ssh/id_rsa.pub"
+  sensitive_content = tls_private_key.main.public_key_openssh
+}
+
+resource local_file main_ssh_private {
+  filename          = ".terraform/.ssh/id_rsa"
+  sensitive_content = tls_private_key.main.private_key_pem
+  file_permission   = "0500"
+}
+
 # Resources
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
@@ -107,6 +122,13 @@ resource azurerm_kubernetes_cluster main {
     os_disk_size_gb = var.aks_cluster_worker_disk_size
     os_type         = "Linux"
     type            = "AvailabilitySet"
+  }
+
+  linux_profile {
+    admin_username = "vmadmin"
+    ssh_key {
+      key_data = tls_private_key.main.public_key_openssh
+    }
   }
 
   dns_prefix = "${var.resource_prefix}-aks"

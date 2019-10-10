@@ -8,6 +8,7 @@ The environment deployed contains the following resources:
 * OPTIONAL: An Azure Container Registry for storing images
 * A bootstrapped Kubernetes cluster 
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
+  * Admin user named vmadmin with the ssh keys stored in .terraform/.ssh/id_rsa
   * A cluster-admin and cluster-read-only service account created for RBAC
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
