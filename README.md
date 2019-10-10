@@ -28,8 +28,7 @@ Prior to deployment you need the following:
 * [helm](https://helm.sh/)
 
 In Azure, you also need:
-* A user account or service policy with Contributor level access to the target subscription
-    * This account also needs Azure AD access to create service principals
+* A user account or service policy with Contributor level access to the target subscription and the Application Administrator AAD role
 
 In addition to these packages, [VS Code](https://code.visualstudio.com/) is a useful, extensible code editor with plug-ins for Git, Terraform and more
 
