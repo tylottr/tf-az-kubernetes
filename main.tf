@@ -46,6 +46,20 @@ resource azurerm_resource_group main {
   tags     = var.tags
 }
 
+
+resource azuread_group main_contributors {
+  name = "${azurerm_resource_group.main.name} Contributors"
+  members = [
+    azuread_service_principal.main.id
+  ]
+}
+
+resource azurerm_role_assignment main_contributors {
+  scope                = azurerm_resource_group.main.id
+  role_definition_name = "Contributor"
+  principal_id         = azuread_group.main_contributors.id
+}
+
 ## Storage
 resource azurerm_container_registry main {
   count = var.enable_acr ? 1 : 0
@@ -62,18 +76,19 @@ resource azurerm_container_registry main {
   admin_enabled = false
 }
 
-## Kubernetes Role Assignments
-resource azurerm_role_assignment main_acr {
+resource azuread_group main_acr_pull {
+  count = var.enable_acr ? 1 : 0
+  name = "${azurerm_container_registry.main[count.index].name} AcrPull Accessors"
+  members = [
+    azuread_service_principal.main.id
+  ]
+}
+
+resource azurerm_role_assignment main_acr_pull {
   count                = var.enable_acr ? 1 : 0
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
-  principal_id         = azuread_service_principal.main.id
-}
-
-resource azurerm_role_assignment main_management {
-  scope                = azurerm_resource_group.main.id
-  role_definition_name = "Contributor"
-  principal_id         = azuread_service_principal.main.id
+  principal_id         = azuread_group.main_acr_pull[count.index].id
 }
 
 ## Kubernetes Compute (Azure-level)
@@ -86,7 +101,7 @@ resource azurerm_kubernetes_cluster main {
   kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
 
   agent_pool_profile {
-    name            = "nodepool1"
+    name            = "nodes"
     count           = var.aks_cluster_worker_min_count
     vm_size         = var.aks_cluster_worker_size
     os_disk_size_gb = var.aks_cluster_worker_disk_size
@@ -162,64 +177,6 @@ data helm_repository jetstack {
 }
 
 ### Cluster Utilities
-resource helm_release main_ingress {
-  name = "nginx-ingress"
-
-  repository = data.helm_repository.stable.metadata[0].name
-  chart      = "nginx-ingress"
-  version    = var.aks_cluster_nginx_ingress_chart_version
-  namespace  = "kube-system"
-
-  values = [
-    <<EOF
-rbac:
-  create: true
-controller:
-  replicaCount: 2
-  metrics:
-    enabled: true
-    service:
-      annotations:
-        prometheus.io/scrape: "true"
-  config:
-    enable-modsecurity: "true"
-    enable-owasp-modsecurity-crs: "true"
-  defaultBackendService: ${var.aks_cluster_custom_backend_service != "" ? var.aks_cluster_custom_backend_service : ""}
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 768Mi
-    requests:
-      cpu: 500m
-      memory: 512Mi
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - nginx-ingress
-          topologyKey: kubernetes.io/hostname
-        weight: 100
-  autoscaling:
-    enabled: true
-    maxReplicas: 4
-    minReplicas: 2
-    targetCPUUtilizationPercentage: 90
-    targetMemoryUtilizationPercentage: 90
-defaultBackend:
-  enabled: ${var.aks_cluster_custom_backend_service != "" ? "false" : "true"}
-    EOF
-  ]
-
-  timeout = 600
-
-  depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
-}
-
 resource helm_release main_autoscaler {
   name = "cluster-autoscaler"
 
@@ -229,31 +186,44 @@ resource helm_release main_autoscaler {
   namespace  = "kube-system"
 
   values = [
-    <<EOF
-rbac:
-  create: true
-azureTenantID: ${data.azurerm_client_config.main.tenant_id}
-azureSubscriptionID: ${data.azurerm_client_config.main.subscription_id}
-azureResourceGroup: ${azurerm_resource_group.main.name}
-azureClusterName: ${azurerm_kubernetes_cluster.main.name}
-azureNodeResourceGroup: ${azurerm_kubernetes_cluster.main.node_resource_group}
-azureVMType: AKS
-cloudProvider: azure
-azureClientID: ${azuread_application.main.application_id}
-azureClientSecret: '${azuread_service_principal_password.main.value}'
-autoscalingGroups:
-- maxSize: ${var.aks_cluster_worker_max_count}
-  minSize: ${var.aks_cluster_worker_min_count}
-  name: ${azurerm_kubernetes_cluster.main.agent_pool_profile[0].name}
-resources:
-  limits:
-    cpu: 50m
-    memory: 128Mi
-  requests:
-    cpu: 10m
-    memory: 64Mi
-EOF
+    templatefile(
+      "${path.module}/templates/helm/values/cluster-autoscaler.yaml.tpl",
+      {
+        azureTenantID          = data.azurerm_client_config.main.tenant_id
+        azureSubscriptionID    = data.azurerm_client_config.main.subscription_id
+        azureResourceGroup     = azurerm_resource_group.main.name
+        azureClusterName       = azurerm_kubernetes_cluster.main.name
+        azureNodeResourceGroup = azurerm_kubernetes_cluster.main.node_resource_group
+        azureClientID          = azuread_application.main.application_id
+        azureClientSecret      = azuread_service_principal_password.main.value
+        nodeGroupMaxSize       = var.aks_cluster_worker_max_count
+        nodeGroupMinSize       = var.aks_cluster_worker_min_count
+        nodeGroupName          = azurerm_kubernetes_cluster.main.agent_pool_profile[0].name
+      }
+    )
   ]
+
+  depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
+}
+
+resource helm_release main_ingress {
+  name = "nginx-ingress"
+
+  repository = data.helm_repository.stable.metadata[0].name
+  chart      = "nginx-ingress"
+  version    = var.aks_cluster_nginx_ingress_chart_version
+  namespace  = "kube-system"
+
+  values = [
+    templatefile(
+      "${path.module}/templates/helm/values/nginx-ingress.yaml.tpl",
+      {
+        customBackendService = var.aks_cluster_custom_backend_service
+      }
+    )
+  ]
+
+  timeout = 600
 
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
@@ -267,22 +237,7 @@ resource helm_release main_cert_manager {
   namespace  = "kube-system"
 
   values = [
-    <<EOF
-global:
-  rbac:
-    create: true
-resources:
-  limits:
-    cpu: 20m
-    memory: 64Mi
-  requests:
-    cpu: 10m
-    memory: 32Mi
-webhook:
-  enabled: false
-cainjector:
-  enabled: false
-EOF
+    templatefile("${path.module}/templates/helm/values/cert-manager.yaml.tpl", {})
   ]
 
   provisioner local-exec {
