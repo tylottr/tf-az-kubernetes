@@ -129,9 +129,12 @@ resource azurerm_kubernetes_cluster main {
 
   network_profile {
     network_plugin     = "kubenet"
+    network_policy     = null
+    load_balancer_sku  = "Basic"
+    docker_bridge_cidr = "172.17.0.1/16"
+    pod_cidr           = "10.244.0.0/16"
     service_cidr       = "10.0.0.0/16"
     dns_service_ip     = "10.0.0.10"
-    docker_bridge_cidr = "172.17.0.1/16"
   }
 
   linux_profile {
@@ -142,12 +145,13 @@ resource azurerm_kubernetes_cluster main {
   }
 
   agent_pool_profile {
-    name            = "nodes"
+    name            = "nodepool1"
+    type            = "AvailabilitySet"
+    os_type         = "Linux"
     count           = var.aks_cluster_worker_min_count
     vm_size         = var.aks_cluster_worker_size
     os_disk_size_gb = var.aks_cluster_worker_disk_size
-    os_type         = "Linux"
-    type            = "AvailabilitySet"
+    max_pods        = 100
   }
 
   lifecycle {
