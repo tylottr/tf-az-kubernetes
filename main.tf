@@ -113,17 +113,25 @@ resource azurerm_kubernetes_cluster main {
   location            = azurerm_resource_group.main.location
   tags                = var.tags
 
+  service_principal {
+    client_id     = azuread_service_principal.main.application_id
+    client_secret = azuread_service_principal_password.main.value
+  }
+
   kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
 
+  dns_prefix          = "${var.resource_prefix}-aks"
   node_resource_group = "${var.resource_prefix}-aks-node-rg"
-  
-  agent_pool_profile {
-    name            = "nodes"
-    count           = var.aks_cluster_worker_min_count
-    vm_size         = var.aks_cluster_worker_size
-    os_disk_size_gb = var.aks_cluster_worker_disk_size
-    os_type         = "Linux"
-    type            = "AvailabilitySet"
+
+  role_based_access_control {
+    enabled = true
+  }
+
+  network_profile {
+    network_plugin     = "kubenet"
+    service_cidr       = "10.0.0.0/16"
+    dns_service_ip     = "10.0.0.10"
+    docker_bridge_cidr = "172.17.0.1/16"
   }
 
   linux_profile {
@@ -133,22 +141,13 @@ resource azurerm_kubernetes_cluster main {
     }
   }
 
-  dns_prefix = "${var.resource_prefix}-aks"
-
-  network_profile {
-    network_plugin     = "kubenet"
-    service_cidr       = "10.0.0.0/16"
-    dns_service_ip     = "10.0.0.10"
-    docker_bridge_cidr = "172.17.0.1/16"
-  }
-
-  service_principal {
-    client_id     = azuread_service_principal.main.application_id
-    client_secret = azuread_service_principal_password.main.value
-  }
-
-  role_based_access_control {
-    enabled = true
+  agent_pool_profile {
+    name            = "nodes"
+    count           = var.aks_cluster_worker_min_count
+    vm_size         = var.aks_cluster_worker_size
+    os_disk_size_gb = var.aks_cluster_worker_disk_size
+    os_type         = "Linux"
+    type            = "AvailabilitySet"
   }
 
   lifecycle {
