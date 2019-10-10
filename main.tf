@@ -78,7 +78,7 @@ resource azurerm_container_registry main {
 
 resource azuread_group main_acr_pull {
   count = var.enable_acr ? 1 : 0
-  name = "${azurerm_container_registry.main[count.index].name} AcrPull Accessors"
+  name  = "${azurerm_container_registry.main[count.index].name} AcrPull Accessors"
   members = [
     azuread_service_principal.main.id
   ]
