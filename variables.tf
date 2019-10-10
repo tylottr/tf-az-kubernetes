@@ -88,12 +88,6 @@ variable aks_cluster_cluster_autoscaler_chart_version {
   default     = "3.2.0"
 }
 
-variable aks_cluster_enable_cert_manager {
-  description = "Flag used to enable cert-manager"
-  type        = bool
-  default     = true
-}
-
 variable aks_cluster_cert_manager_chart_version {
   description = "The chart version for the cert-manager Helm chart"
   type        = string
