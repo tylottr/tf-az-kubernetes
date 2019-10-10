@@ -115,6 +115,8 @@ resource azurerm_kubernetes_cluster main {
 
   kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
 
+  node_resource_group = "${var.resource_prefix}-aks-node-rg"
+  
   agent_pool_profile {
     name            = "nodes"
     count           = var.aks_cluster_worker_min_count
