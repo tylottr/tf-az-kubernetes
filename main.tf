@@ -154,6 +154,12 @@ resource azurerm_kubernetes_cluster main {
     max_pods        = 100
   }
 
+  addon_profile {
+    kube_dashboard {
+      enabled = true
+    }
+  }
+
   lifecycle {
     ignore_changes = [
       agent_pool_profile[0].count,
@@ -350,5 +356,22 @@ resource kubernetes_cluster_role_binding main_read_only {
     kind      = "ServiceAccount"
     name      = kubernetes_service_account.main_read_only.metadata[0].name
     namespace = kubernetes_service_account.main_read_only.metadata[0].namespace
+  }
+}
+
+### Dashboard
+resource kubernetes_cluster_role_binding main_dashboard_view {
+  metadata {
+    name = "kubernetes-dashboard"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "view"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "kubernetes-dashboard"
+    namespace = "kube-system"
   }
 }
