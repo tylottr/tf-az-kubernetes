@@ -187,7 +187,7 @@ resource helm_release main_autoscaler {
 
   values = [
     templatefile(
-      "${path.module}/templates/helm/values/cluster-autoscaler.yaml.tpl",
+      "${path.module}/templates/kubernetes/helm/values/cluster-autoscaler.yaml.tpl",
       {
         azureTenantID          = data.azurerm_client_config.main.tenant_id
         azureSubscriptionID    = data.azurerm_client_config.main.subscription_id
@@ -216,7 +216,7 @@ resource helm_release main_ingress {
 
   values = [
     templatefile(
-      "${path.module}/templates/helm/values/nginx-ingress.yaml.tpl",
+      "${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl",
       {
         customBackendService = var.aks_cluster_custom_backend_service
       }
@@ -237,7 +237,7 @@ resource helm_release main_cert_manager {
   namespace  = "kube-system"
 
   values = [
-    templatefile("${path.module}/templates/helm/values/cert-manager.yaml.tpl", {})
+    templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.yaml.tpl", {})
   ]
 
   provisioner local-exec {
