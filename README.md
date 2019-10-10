@@ -90,7 +90,7 @@ Post-Deployment
 
 Following deployment there are some resources within the cluster that need to be deployed separate to the Terraform deployment. These steps will not be tracked by Terraform itself.
 
-Additional Kubernetes configuration files can be found under the [kubernetes](./kubernetes) directory.
+Additional Kubernetes configuration files can be found under the [files/kubernetes](./files/kubernetes) directory.
 
 #### Certificates
 
@@ -100,7 +100,7 @@ Certificates are handled by cert-manager to provide valid SSL certificates, whic
 * Certificates are namespaced
     * Certificates can support multiple names, assuming DNS is configured properly
 
-Manifests under [kubernetes/cert-manager](./kubernetes/cert-manager) can be used as a guideline assuming DNS is set up for the endpoint.
+Manifests under [files/kubernetes/cert-manager](./files/kubernetes/cert-manager) can be used as a guideline assuming DNS is set up for the endpoint.
 
 Useful Links
 ------------
