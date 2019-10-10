@@ -4,7 +4,7 @@ data azurerm_client_config main {
 
 resource random_integer main {
   min = 0
-  max = 9999
+  max = 999
 }
 
 # Resources
