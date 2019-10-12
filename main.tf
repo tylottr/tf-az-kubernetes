@@ -61,20 +61,6 @@ resource azurerm_resource_group main {
   tags     = var.tags
 }
 
-
-resource azuread_group main_contributors {
-  name = "${azurerm_resource_group.main.name} Contributors"
-  members = [
-    azuread_service_principal.main.id
-  ]
-}
-
-resource azurerm_role_assignment main_contributors {
-  scope                = azurerm_resource_group.main.id
-  role_definition_name = "Contributor"
-  principal_id         = azuread_group.main_contributors.id
-}
-
 ## Storage
 resource azurerm_container_registry main {
   count = var.enable_acr ? 1 : 0
@@ -91,19 +77,11 @@ resource azurerm_container_registry main {
   admin_enabled = false
 }
 
-resource azuread_group main_acr_pull {
-  count = var.enable_acr ? 1 : 0
-  name  = "${azurerm_container_registry.main[count.index].name} AcrPull Accessors"
-  members = [
-    azuread_service_principal.main.id
-  ]
-}
-
 resource azurerm_role_assignment main_acr_pull {
   count                = var.enable_acr ? 1 : 0
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
-  principal_id         = azuread_group.main_acr_pull[count.index].id
+  principal_id         = azuread_service_principal.main.id
 }
 
 ## Kubernetes Compute (Azure-level)
@@ -172,6 +150,12 @@ resource local_file main_config {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
   file_permission   = "0500"
+}
+
+resource azurerm_role_assignment main_contributor {
+  scope                = azurerm_kubernetes_cluster.main.id
+  role_definition_name = "Contributor"
+  principal_id         = azuread_service_principal.main.id
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
