@@ -140,7 +140,7 @@ resource azurerm_kubernetes_cluster main {
 
   lifecycle {
     ignore_changes = [
-      agent_pool_profile[0].count,
+      agent_pool_profile,
       kubernetes_version
     ]
   }
