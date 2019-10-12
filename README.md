@@ -108,4 +108,3 @@ Useful Links
 * [Terraform Documentation](https://www.terraform.io/docs/)
 * [Azure Documentation](https://docs.microsoft.com/en-us/azure/)
 * [Kubernetes Documentation](https://kubernetes.io/docs/home/)
-* [cert-manager Repository](https://github.com/jetstack/cert-manager)
