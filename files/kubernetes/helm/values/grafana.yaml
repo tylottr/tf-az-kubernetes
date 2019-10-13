@@ -1,5 +1,10 @@
 # helm upgrade grafana stable/grafana --install --namespace monitoring --values ./grafana.yaml
 replicas: 1
+persistence:
+  enabled: true
+  storageClassName: azure-premium
+plugins:
+- grafana-simple-json-datasource
 datasources:
   datasources.yaml:
     apiversion: 1
