@@ -102,6 +102,10 @@ Certificates are handled by cert-manager to provide valid SSL certificates, whic
 
 Manifests under [files/kubernetes/manifests/cert-manager](./files/kubernetes/manifests/cert-manager) can be used as a guideline assuming DNS is set up for the endpoint.
 
+#### Helm Charts
+
+Additional values for some Helm charts have been stored under [files/kubernetes/helm/values](./files/kubernetes/helm/values) to provide some additional options for services to deploy to the cluster.
+
 Useful Links
 ------------
 
