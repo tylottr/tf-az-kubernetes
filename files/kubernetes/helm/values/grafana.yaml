@@ -2,6 +2,7 @@
 replicas: 1
 persistence:
   enabled: true
+  type: pvc
   storageClassName: azure-premium
 plugins:
 - grafana-simple-json-datasource
