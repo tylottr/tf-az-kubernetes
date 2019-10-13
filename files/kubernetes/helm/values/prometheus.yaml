@@ -1,7 +1,12 @@
-# helm upgrade prometheus stable/prometheus --install --atomic --namespace monitoring --values ./prometheus.yaml
+# helm upgrade prometheus stable/prometheus --install --namespace monitoring --values ./prometheus.yaml
+server:
+  replicaCount: 2
+  statefulSet:
+    enabled: true
+  persistentVolume:
+    enabled: true
+    storageClass: azure-premium
 alertmanager:
   enabled: false
 pushgateway:
   enabled: false
-server:
-  replicaCount: 1

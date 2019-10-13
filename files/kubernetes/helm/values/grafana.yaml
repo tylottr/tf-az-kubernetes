@@ -1,7 +1,5 @@
-# helm upgrade grafana stable/grafana --install --atomic --namespace monitoring --values ./grafana.yaml
+# helm upgrade grafana stable/grafana --install --namespace monitoring --values ./grafana.yaml
 replicas: 1
-persistence:
-  enabled: true
 datasources:
   datasources.yaml:
     apiversion: 1
