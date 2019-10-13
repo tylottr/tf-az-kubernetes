@@ -36,7 +36,8 @@ resource azuread_service_principal main {
   application_id = azuread_application.main.application_id
 
   provisioner local-exec {
-    command = "sleep 45"
+    on_failure = continue
+    command    = "sleep 45"
   }
 }
 
@@ -50,7 +51,8 @@ resource azuread_service_principal_password main {
   end_date_relative    = var.service_policy_password_expiry
 
   provisioner local-exec {
-    command = "sleep 45"
+    on_failure = continue
+    command    = "sleep 45"
   }
 }
 
