@@ -26,7 +26,7 @@ resource local_file main_ssh_private {
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
 resource azuread_application main {
-  name                       = "${var.resource_prefix}-aks Kubernetes"
+  name                       = "${var.resource_prefix}-aks"
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = false
   homepage                   = "https://${var.resource_prefix}-aks"
