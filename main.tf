@@ -32,23 +32,18 @@ resource azuread_application main {
   homepage                   = "https://${var.resource_prefix}-aks"
 }
 
-resource azuread_service_principal main {
-  application_id = azuread_application.main.application_id
-
-  provisioner local-exec {
-    on_failure = continue
-    command    = "sleep 45"
-  }
-}
-
 resource random_password main_secret {
   length = 40
 }
 
-resource azuread_service_principal_password main {
-  service_principal_id = azuread_service_principal.main.id
-  value                = random_password.main_secret.result
-  end_date_relative    = var.service_policy_password_expiry
+resource azuread_application_password main {
+  application_object_id = azuread_application.main.id
+  value                 = random_password.main_secret.result
+  end_date_relative     = var.service_policy_password_expiry
+}
+
+resource azuread_service_principal main {
+  application_id = azuread_application.main.application_id
 
   provisioner local-exec {
     on_failure = continue
@@ -95,7 +90,7 @@ resource azurerm_kubernetes_cluster main {
 
   service_principal {
     client_id     = azuread_service_principal.main.application_id
-    client_secret = azuread_service_principal_password.main.value
+    client_secret = azuread_application_password.main.value
   }
 
   kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
@@ -214,7 +209,7 @@ resource helm_release main_autoscaler {
         azureClusterName       = azurerm_kubernetes_cluster.main.name
         azureNodeResourceGroup = azurerm_kubernetes_cluster.main.node_resource_group
         azureClientID          = azuread_application.main.application_id
-        azureClientSecret      = azuread_service_principal_password.main.value
+        azureClientSecret      = azuread_application_password.main.value
         nodeGroupMaxSize       = var.aks_cluster_worker_max_count
         nodeGroupMinSize       = var.aks_cluster_worker_min_count
         nodeGroupName          = azurerm_kubernetes_cluster.main.agent_pool_profile[0].name
