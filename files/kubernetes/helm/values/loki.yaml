@@ -1,1 +1,5 @@
 # helm upgrade loki loki/loki-stack --install --atomic --namespace=monitoring --values ./loki.yaml
+loki:
+  replicas: 3
+  persistence:
+    enabled: true
