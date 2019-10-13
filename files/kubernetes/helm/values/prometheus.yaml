@@ -1,0 +1,7 @@
+# helm upgrade prometheus stable/prometheus --install --atomic --namespace monitoring --values ./prometheus.yaml
+alertmanager:
+  enabled: false
+pushgateway:
+  enabled: false
+server:
+  replicaCount: 1
