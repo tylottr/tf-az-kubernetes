@@ -105,7 +105,7 @@ resource azurerm_kubernetes_cluster main {
   network_profile {
     network_plugin     = "kubenet"
     network_policy     = null
-    load_balancer_sku  = "Basic"
+    load_balancer_sku  = "Standard"
     docker_bridge_cidr = "172.17.0.1/16"
     pod_cidr           = "10.244.0.0/16"
     service_cidr       = "10.0.0.0/16"
