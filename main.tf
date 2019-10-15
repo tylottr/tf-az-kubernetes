@@ -292,54 +292,6 @@ resource kubernetes_storage_class main_azure {
 }
 
 ## Kubernetes Service Accounts
-### Full Access
-resource kubernetes_service_account main_full_access {
-  metadata {
-    name      = "cluster-full-access"
-    namespace = "kube-system"
-  }
-}
-
-resource kubernetes_cluster_role_binding main_full_access {
-  metadata {
-    name = "cluster-full-access"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.main_full_access.metadata[0].name
-    namespace = kubernetes_service_account.main_full_access.metadata[0].namespace
-  }
-}
-
-### Read Only
-resource kubernetes_service_account main_read_only {
-  metadata {
-    name      = "cluster-read-only"
-    namespace = "kube-system"
-  }
-}
-
-resource kubernetes_cluster_role_binding main_read_only {
-  metadata {
-    name = "cluster-read-only"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "view"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.main_read_only.metadata[0].name
-    namespace = kubernetes_service_account.main_read_only.metadata[0].namespace
-  }
-}
-
 ### Dashboard
 resource kubernetes_cluster_role_binding main_dashboard_view {
   metadata {

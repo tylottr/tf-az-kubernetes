@@ -9,7 +9,7 @@ The environment deployed contains the following resources:
 * A bootstrapped Kubernetes cluster 
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
   * Admin user named vmadmin with the ssh keys stored in .terraform/.ssh/id_rsa
-  * A cluster-admin and cluster-read-only service account created for RBAC, and a read-only binding for kubernetes-dashboard
+  * A read-only cluster role binding for the Kubernetes dashboard
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
     * stable/nginx-ingress
@@ -101,6 +101,12 @@ Certificates are handled by cert-manager to provide valid SSL certificates, whic
     * Certificates can support multiple names, assuming DNS is configured properly
 
 Manifests under [files/kubernetes/manifests/cert-manager](./files/kubernetes/manifests/cert-manager) can be used as a guideline assuming DNS is set up for the endpoint.
+
+#### Rbac Roles
+
+Additional RBAC roles can be created for the cluster.
+
+Manifests under [files/kubernetes/manifests/rbac](./files/kubernetes/manifests/rbac) can be used as a guideline or as-is with a cluster-admin and read-only role already in the folder.
 
 #### Helm Charts
 
