@@ -1,6 +1,6 @@
 # helm upgrade prometheus stable/prometheus --version 9.1.2 --install --namespace monitoring --values ./prometheus.yaml
 server:
-  replicaCount: 2
+  replicaCount: 1
   resources:
     requests:
       cpu: 100m
@@ -8,7 +8,7 @@ server:
     limits:
       cpu: 200m
   statefulSet:
-    enabled: true
+    enabled: false
   persistentVolume:
     enabled: true
     storageClass: azure-premium
