@@ -4,3 +4,13 @@ loki:
   persistence:
     enabled: true
     storageClassName: azure-premium
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - loki
+        topologyKey: "kubernetes.io/hostname"

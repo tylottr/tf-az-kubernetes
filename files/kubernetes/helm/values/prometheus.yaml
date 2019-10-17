@@ -13,6 +13,17 @@ server:
     enabled: true
     storageClass: azure-premium
   retention: "15d"
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - prometheus
+        topologyKey: "kubernetes.io/hostname"
+
 nodeExporter:
   resources:
     requests: 
@@ -21,9 +32,12 @@ nodeExporter:
     limits:
       cpu: 200m
       memory: 100Mi
+
 kubeStateMetrics:
   enabled: true
+
 alertmanager:
   enabled: false
+
 pushgateway:
   enabled: false

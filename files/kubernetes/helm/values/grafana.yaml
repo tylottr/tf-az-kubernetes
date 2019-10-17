@@ -4,6 +4,17 @@ persistence:
   enabled: true
   type: pvc
   storageClassName: azure-premium
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - grafana
+      topologyKey: "kubernetes.io/hostname"
+      
 plugins:
 - grafana-simple-json-datasource
 datasources:
