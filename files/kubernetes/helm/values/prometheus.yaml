@@ -12,6 +12,7 @@ server:
   persistentVolume:
     enabled: true
     storageClass: azure-premium
+  retention: "15d"
 nodeExporter:
   resources:
     requests: 
