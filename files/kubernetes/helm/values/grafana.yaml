@@ -1,4 +1,4 @@
-# helm upgrade grafana stable/grafana --install --namespace monitoring --values ./grafana.yaml
+# helm upgrade grafana stable/grafana --version 3.11.0 --install --namespace monitoring --values ./grafana.yaml
 replicas: 1
 persistence:
   enabled: true
@@ -14,7 +14,7 @@ affinity:
           values:
           - grafana
       topologyKey: "kubernetes.io/hostname"
-      
+
 plugins:
 - grafana-simple-json-datasource
 datasources:

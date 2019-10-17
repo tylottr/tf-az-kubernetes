@@ -1,4 +1,4 @@
-# helm upgrade loki loki/loki-stack --install --namespace monitoring --values ./loki.yaml
+# helm upgrade loki loki/loki-stack --version 0.17.1 --install --namespace monitoring --values ./loki.yaml
 loki:
   replicas: 2
   persistence:
