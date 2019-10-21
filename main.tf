@@ -61,6 +61,7 @@ resource "azurerm_resource_group" "main" {
 ## Storage
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
+
   name = replace(
     "${var.resource_prefix}acr${random_integer.main.result}",
     "-",
@@ -75,10 +76,11 @@ resource "azurerm_container_registry" "main" {
 }
 
 resource "azurerm_role_assignment" "main_acr_pull" {
-  count                = var.enable_acr ? 1 : 0
-  scope                = azurerm_container_registry.main[count.index].id
-  role_definition_name = "AcrPull"
+  count = var.enable_acr ? 1 : 0
+
   principal_id         = azuread_service_principal.main.id
+  role_definition_name = "AcrPull"
+  scope                = azurerm_container_registry.main[count.index].id
 }
 
 ## Kubernetes Compute (Azure-level)
@@ -150,9 +152,9 @@ resource "local_file" "main_config" {
 }
 
 resource "azurerm_role_assignment" "main_contributor" {
-  scope                = azurerm_kubernetes_cluster.main.id
-  role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.main.id
+  role_definition_name = "Contributor"
+  scope                = azurerm_kubernetes_cluster.main.id
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
@@ -168,11 +170,13 @@ resource "kubernetes_cluster_role_binding" "main_helm_tiller" {
   metadata {
     name = "tiller"
   }
+
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
     name      = "cluster-admin"
   }
+
   subject {
     kind      = "ServiceAccount"
     name      = kubernetes_service_account.main_helm_tiller.metadata[0].name
@@ -282,8 +286,8 @@ resource "kubernetes_storage_class" "main_azure" {
   }
 
   storage_provisioner    = "kubernetes.io/azure-disk"
-  allow_volume_expansion = "true"
   reclaim_policy         = "Delete"
+  allow_volume_expansion = "true"
 
   parameters = {
     kind               = "managed"
@@ -297,11 +301,13 @@ resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
   metadata {
     name = "kubernetes-dashboard"
   }
+
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
     name      = "view"
   }
+
   subject {
     kind      = "ServiceAccount"
     name      = "kubernetes-dashboard"
