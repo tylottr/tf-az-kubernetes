@@ -24,25 +24,25 @@ resource "local_file" "main_ssh_private" {
 # Resources
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
-resource "azuread_application" "main" {
+resource "azuread_application" "main_aks" {
   name                       = "${var.resource_prefix}-aks"
   available_to_other_tenants = false
   oauth2_allow_implicit_flow = false
   homepage                   = "https://${var.resource_prefix}-aks"
 }
 
-resource "random_password" "main_secret" {
+resource "random_password" "main_aks_secret" {
   length = 40
 }
 
-resource "azuread_application_password" "main" {
-  application_object_id = azuread_application.main.id
-  value                 = random_password.main_secret.result
+resource "azuread_application_password" "main_aks" {
+  application_object_id = azuread_application.main_aks.id
+  value                 = random_password.main_aks_secret.result
   end_date_relative     = var.service_policy_password_expiry
 }
 
-resource "azuread_service_principal" "main" {
-  application_id = azuread_application.main.application_id
+resource "azuread_service_principal" "main_aks" {
+  application_id = azuread_application.main_aks.application_id
 
   provisioner "local-exec" {
     on_failure = continue
@@ -77,7 +77,7 @@ resource "azurerm_container_registry" "main" {
 resource "azurerm_role_assignment" "main_acr_pull" {
   count = var.enable_acr ? 1 : 0
 
-  principal_id         = azuread_service_principal.main.id
+  principal_id         = azuread_service_principal.main_aks.id
   role_definition_name = "AcrPull"
   scope                = azurerm_container_registry.main[count.index].id
 }
@@ -90,8 +90,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   tags                = var.tags
 
   service_principal {
-    client_id     = azuread_service_principal.main.application_id
-    client_secret = azuread_application_password.main.value
+    client_id     = azuread_service_principal.main_aks.application_id
+    client_secret = azuread_application_password.main_aks.value
   }
 
   kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
@@ -150,8 +150,8 @@ resource "local_file" "main_config" {
   file_permission   = "0500"
 }
 
-resource "azurerm_role_assignment" "main_contributor" {
-  principal_id         = azuread_service_principal.main.id
+resource "azurerm_role_assignment" "main_autoscaling_contributor" {
+  principal_id         = azuread_service_principal.main_aks.id
   role_definition_name = "Contributor"
   scope                = azurerm_kubernetes_cluster.main.id
 }
@@ -206,13 +206,13 @@ resource "helm_release" "main_autoscaler" {
     templatefile(
       "${path.module}/templates/kubernetes/helm/values/cluster-autoscaler.yaml.tpl",
       {
-        azureTenantID          = data.azurerm_client_config.main.tenant_id
-        azureSubscriptionID    = data.azurerm_client_config.main.subscription_id
+        azureTenantID          = data.azurerm_client_config.current.tenant_id
+        azureSubscriptionID    = data.azurerm_client_config.current.subscription_id
         azureResourceGroup     = azurerm_resource_group.main.name
         azureClusterName       = azurerm_kubernetes_cluster.main.name
         azureNodeResourceGroup = azurerm_kubernetes_cluster.main.node_resource_group
-        azureClientID          = azuread_application.main.application_id
-        azureClientSecret      = azuread_application_password.main.value
+        azureClientID          = azuread_application.main_aks.application_id
+        azureClientSecret      = azuread_application_password.main_aks.value
         nodeGroupMaxSize       = var.aks_cluster_worker_max_count
         nodeGroupMinSize       = var.aks_cluster_worker_min_count
         nodeGroupName          = azurerm_kubernetes_cluster.main.agent_pool_profile[0].name

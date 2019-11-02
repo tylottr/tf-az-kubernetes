@@ -1,5 +1,5 @@
 output "kubernetes_service_principal" {
-  value = azuread_service_principal.main.application_id
+  value = azuread_service_principal.main_aks.application_id
 }
 
 output "kubernetes_cluster_name" {
