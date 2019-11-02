@@ -314,7 +314,7 @@ resource "kubernetes_storage_class" "main_azure" {
   }
 }
 
-## Kubernetes Service Accounts
+## Kubernetes RBAC
 ### Dashboard
 resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
   metadata {
@@ -331,5 +331,37 @@ resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
     kind      = "ServiceAccount"
     name      = "kubernetes-dashboard"
     namespace = "kube-system"
+  }
+}
+
+### OMS Log Reader
+resource "kubernetes_cluster_role" "main_log_reader" {
+  metadata {
+    name = "containerHealth-log-reader "
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["pods/logs", "events"]
+    verbs      = ["get", "list"]
+  }
+}
+
+
+resource "kubernetes_cluster_role_binding" "main_log_reader" {
+  metadata {
+    name = "containerHealth-read-logs-global"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "containerHealth-log-reader"
+  }
+
+  subject {
+    kind      = "User"
+    name      = "clusterUser"
+    api_group = "rbac.authorization.k8s.io"
   }
 }
