@@ -39,6 +39,11 @@ resource "azuread_application_password" "main_aks" {
   application_object_id = azuread_application.main_aks.id
   value                 = random_password.main_aks_secret.result
   end_date_relative     = "43800h" # 5 years
+
+  provisioner "local-exec" {
+    on_failure = continue
+    command    = "sleep 45"
+  }
 }
 
 resource "azuread_service_principal" "main_aks" {
@@ -80,6 +85,16 @@ resource "azurerm_role_assignment" "main_acr_pull" {
   principal_id         = azuread_service_principal.main_aks.id
   role_definition_name = "AcrPull"
   scope                = azurerm_container_registry.main[count.index].id
+}
+
+## Logging
+resource "azurerm_log_analytics_workspace" "main" {
+  name                = "${var.resource_prefix}-oms"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  tags                = var.tags
+
+  sku = "PerGB2018"
 }
 
 ## Kubernetes Compute (Azure-level)
@@ -134,6 +149,11 @@ resource "azurerm_kubernetes_cluster" "main" {
     kube_dashboard {
       enabled = true
     }
+
+    oms_agent {
+      enabled                    = true
+      log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+    }
   }
 
   lifecycle {
@@ -148,12 +168,6 @@ resource "local_file" "main_config" {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
   file_permission   = "0500"
-}
-
-resource "azurerm_role_assignment" "main_autoscaling_contributor" {
-  principal_id         = azuread_service_principal.main_aks.id
-  role_definition_name = "Contributor"
-  scope                = azurerm_kubernetes_cluster.main.id
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
@@ -221,6 +235,12 @@ resource "helm_release" "main_autoscaler" {
   ]
 
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
+}
+
+resource "azurerm_role_assignment" "main_autoscaling_contributor" {
+  principal_id         = azuread_service_principal.main_aks.id
+  role_definition_name = "Contributor"
+  scope                = azurerm_kubernetes_cluster.main.id
 }
 
 resource "helm_release" "main_ingress" {
