@@ -15,9 +15,9 @@ output "kubernetes_node_rg_name" {
 }
 
 output "acr_name" {
-  value = azurerm_container_registry.main[0].name
+  value = var.enable_acr ? azurerm_container_registry.main[0].name : null
 }
 
 output "acr_id" {
-  value = azurerm_container_registry.main[0].id
+  value = var.enable_acr ? azurerm_container_registry.main[0].id : null
 }
