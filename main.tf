@@ -38,7 +38,7 @@ resource "random_password" "main_aks_secret" {
 resource "azuread_application_password" "main_aks" {
   application_object_id = azuread_application.main_aks.id
   value                 = random_password.main_aks_secret.result
-  end_date_relative     = var.service_policy_password_expiry
+  end_date_relative     = "43800h" # 5 years
 }
 
 resource "azuread_service_principal" "main_aks" {

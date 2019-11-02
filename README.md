@@ -43,7 +43,6 @@ These are the variables used along with their defaults. For any without a value 
 |location|The location of this deployment|UK South|
 |resource_prefix|A prefix for the name of the resource, used to generate the resource names|kubernetes|
 |tags|Tags given to the resources created by this template|{}|
-|service_policy_password_expiry|The amount of time for a service policy passwords to be valid|43800h|
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|
 |aks_cluster_kubernetes_version|Version of Kubernetes to use in the cluster|[NOT REQUIRED]|

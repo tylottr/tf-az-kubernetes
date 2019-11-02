@@ -17,12 +17,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "service_policy_password_expiry" {
-  description = "The amount of time for a service policy passwords to be valid"
-  type        = string
-  default     = "43800h" # 5 Years
-}
-
 # Resource-specific
 ## Azure Container Registry
 variable "enable_acr" {
