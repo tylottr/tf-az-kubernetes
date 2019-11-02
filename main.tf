@@ -220,16 +220,16 @@ resource "helm_release" "main_autoscaler" {
     templatefile(
       "${path.module}/templates/kubernetes/helm/values/cluster-autoscaler.yaml.tpl",
       {
-        azureTenantID          = data.azurerm_client_config.current.tenant_id
-        azureSubscriptionID    = data.azurerm_client_config.current.subscription_id
-        azureResourceGroup     = azurerm_resource_group.main.name
-        azureClusterName       = azurerm_kubernetes_cluster.main.name
-        azureNodeResourceGroup = azurerm_kubernetes_cluster.main.node_resource_group
-        azureClientID          = azuread_application.main_aks.application_id
-        azureClientSecret      = azuread_application_password.main_aks.value
-        nodeGroupMaxSize       = var.aks_cluster_worker_max_count
-        nodeGroupMinSize       = var.aks_cluster_worker_min_count
-        nodeGroupName          = azurerm_kubernetes_cluster.main.agent_pool_profile[0].name
+        azure_tenant_id          = data.azurerm_client_config.current.tenant_id
+        azure_subscription_id    = data.azurerm_client_config.current.subscription_id
+        azure_resource_group     = azurerm_resource_group.main.name
+        azure_cluster_name       = azurerm_kubernetes_cluster.main.name
+        azure_node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
+        azure_client_id          = azuread_application.main_aks.application_id
+        azure_client_secret      = azuread_application_password.main_aks.value
+        node_group_min_size       = var.aks_cluster_worker_min_count
+        node_group_max_size       = var.aks_cluster_worker_max_count
+        node_group_name          = azurerm_kubernetes_cluster.main.agent_pool_profile[0].name
       }
     )
   ]
@@ -255,7 +255,7 @@ resource "helm_release" "main_ingress" {
     templatefile(
       "${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl",
       {
-        customBackendService = var.aks_cluster_custom_backend_service
+        custom_backend_service = var.aks_cluster_custom_backend_service
       }
     )
   ]
