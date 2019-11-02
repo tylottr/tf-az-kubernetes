@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 
 resource "random_integer" "main" {
   min = 0
-  max = 999
+  max = 99
 }
 
 resource "tls_private_key" "main" {
