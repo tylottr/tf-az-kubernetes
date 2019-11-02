@@ -45,8 +45,7 @@ resource "azuread_service_principal" "main_aks" {
   application_id = azuread_application.main_aks.application_id
 
   provisioner "local-exec" {
-    /*
-     * This will fail on Windows, due to the lack of sleep command.
+    /* This will fail on Windows, due to the lack of sleep command.
      * It may cause the template to fail due to the provider - in
      * which case, re-run the Apply command.
      **
