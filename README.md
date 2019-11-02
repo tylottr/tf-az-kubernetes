@@ -49,7 +49,7 @@ These are the variables used along with their defaults. For any without a value 
 |aks_cluster_worker_min_count|Minimum number of workers in the AKS cluster|1|
 |aks_cluster_worker_max_count|Maximum number of workers in the AKS cluster|5|
 |aks_cluster_worker_size|Size of workers in the AKS cluster|Standard_B2ms|
-|aks_cluster_worker_disk_size|Disk size of workers in the AKS cluster (Minimum 30)|30|
+|aks_cluster_worker_disk_size|Disk size of workers in the AKS cluster (Minimum 30)|64|
 |aks_cluster_custom_backend_service|The custom backend service in the format NAMESPACE/SERVICE|[NOT REQUIRED]|
 |aks_cluster_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.14.0|
 |aks_cluster_cluster_autoscaler_chart_version|The chart version for the cluster-autoscaler Helm chart|3.2.0|

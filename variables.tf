@@ -60,7 +60,7 @@ variable "aks_cluster_worker_size" {
 variable "aks_cluster_worker_disk_size" {
   description = "Disk size of workers in the AKS cluster (Minimum 30)"
   type        = number
-  default     = 30
+  default     = 64
 }
 
 ### K8s-level
