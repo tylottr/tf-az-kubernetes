@@ -1,6 +1,5 @@
 # Data
-data "azurerm_client_config" "main" {
-}
+data "azurerm_client_config" "current" {}
 
 resource "random_integer" "main" {
   min = 0
