@@ -89,7 +89,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
 ## Logging
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${var.resource_prefix}-oms"
+  name                = "${var.resource_prefix}-aks-oms"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
