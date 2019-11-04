@@ -13,7 +13,6 @@ The environment deployed contains the following resources:
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
     * stable/nginx-ingress
-    * stable/cluster-autoscaler
     * jetstack/cert-manager
   * Storage classes for Azure standard and premium storage
 
@@ -52,7 +51,6 @@ These are the variables used along with their defaults. For any without a value 
 |aks_cluster_worker_disk_size|Disk size of workers in the AKS cluster (Minimum 30)|64|
 |aks_cluster_custom_backend_service|The custom backend service in the format NAMESPACE/SERVICE|[NOT REQUIRED]|
 |aks_cluster_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.14.0|
-|aks_cluster_cluster_autoscaler_chart_version|The chart version for the cluster-autoscaler Helm chart|3.2.0|
 |aks_cluster_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.9.1|
 
 Outputs

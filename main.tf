@@ -66,7 +66,7 @@ resource "azurerm_resource_group" "main" {
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
-  name = replace("${var.resource_prefix}acr${random_integer.entropy.result}", "-", "")
+  name                = replace("${var.resource_prefix}acr${random_integer.entropy.result}", "-", "")
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
@@ -132,13 +132,16 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   agent_pool_profile {
-    name            = "nodepool1"
-    type            = "AvailabilitySet"
-    os_type         = "Linux"
-    count           = var.aks_cluster_worker_min_count
-    vm_size         = var.aks_cluster_worker_size
-    os_disk_size_gb = var.aks_cluster_worker_disk_size
-    max_pods        = 100
+    name                = "nodepool1"
+    type                = "VirtualMachineScaleSets"
+    os_type             = "Linux"
+    count               = var.aks_cluster_worker_min_count
+    enable_auto_scaling = true
+    min_count           = var.aks_cluster_worker_min_count
+    max_count           = var.aks_cluster_worker_max_count
+    vm_size             = var.aks_cluster_worker_size
+    os_disk_size_gb     = var.aks_cluster_worker_disk_size
+    max_pods            = 100
   }
 
   addon_profile {
@@ -204,41 +207,6 @@ data "helm_repository" "jetstack" {
 }
 
 ### Cluster Utilities
-resource "helm_release" "main_autoscaler" {
-  name = "cluster-autoscaler"
-
-  repository = data.helm_repository.stable.metadata[0].name
-  chart      = "cluster-autoscaler"
-  version    = var.aks_cluster_cluster_autoscaler_chart_version
-  namespace  = "kube-system"
-
-  values = [
-    templatefile(
-      "${path.module}/templates/kubernetes/helm/values/cluster-autoscaler.yaml.tpl",
-      {
-        azure_tenant_id           = data.azurerm_client_config.current.tenant_id
-        azure_subscription_id     = data.azurerm_client_config.current.subscription_id
-        azure_resource_group      = azurerm_resource_group.main.name
-        azure_cluster_name        = azurerm_kubernetes_cluster.main.name
-        azure_node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
-        azure_client_id           = azuread_application.main_aks.application_id
-        azure_client_secret       = azuread_application_password.main_aks.value
-        node_group_min_size       = var.aks_cluster_worker_min_count
-        node_group_max_size       = var.aks_cluster_worker_max_count
-        node_group_name           = azurerm_kubernetes_cluster.main.agent_pool_profile[0].name
-      }
-    )
-  ]
-
-  depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
-}
-
-resource "azurerm_role_assignment" "main_autoscaling_contributor" {
-  principal_id         = azuread_service_principal.main_aks.id
-  role_definition_name = "Contributor"
-  scope                = azurerm_kubernetes_cluster.main.id
-}
-
 resource "helm_release" "main_ingress" {
   name = "nginx-ingress"
 
