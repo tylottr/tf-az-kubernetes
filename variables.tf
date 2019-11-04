@@ -64,16 +64,16 @@ variable "aks_cluster_worker_disk_size" {
 }
 
 ### K8s-level
-variable "aks_cluster_custom_backend_service" {
-  description = "The custom backend service in the format NAMESPACE/SERVICE"
-  type        = string
-  default     = ""
-}
-
 variable "aks_cluster_nginx_ingress_chart_version" {
   description = "The chart version for the nginx-ingress Helm chart"
   type        = string
   default     = "1.14.0"
+}
+
+variable "aks_cluster_custom_backend_service" {
+  description = "The custom backend service in the format NAMESPACE/SERVICE"
+  type        = string
+  default     = ""
 }
 
 variable "aks_cluster_cert_manager_chart_version" {
