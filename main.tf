@@ -1,7 +1,7 @@
 # Data
 data "azurerm_client_config" "current" {}
 
-resource "random_integer" "main" {
+resource "random_integer" "entropy" {
   min = 0
   max = 99
 }
@@ -66,11 +66,7 @@ resource "azurerm_resource_group" "main" {
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
-  name = replace(
-    "${var.resource_prefix}acr${random_integer.main.result}",
-    "-",
-    "",
-  )
+  name = replace("${var.resource_prefix}acr${random_integer.entropy.result}", "-", "")
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
