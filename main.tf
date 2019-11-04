@@ -141,7 +141,6 @@ resource "azurerm_kubernetes_cluster" "main" {
     max_count           = var.aks_cluster_worker_max_count
     vm_size             = var.aks_cluster_worker_size
     os_disk_size_gb     = var.aks_cluster_worker_disk_size
-    max_pods            = 100
   }
 
   addon_profile {
