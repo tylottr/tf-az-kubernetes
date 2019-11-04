@@ -298,15 +298,33 @@ resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
 }
 
 ### OMS Log Reader
+// See https://docs.microsoft.com/en-gb/azure/azure-monitor/insights/container-insights-livedata-setup
 resource "kubernetes_cluster_role" "main_log_reader" {
   metadata {
-    name = "containerHealth-log-reader "
+    name = "containerHealth-log-reader"
   }
 
   rule {
-    api_groups = [""]
-    resources  = ["pods/logs", "events"]
-    verbs      = ["get", "list"]
+    api_groups = [
+      "",
+      "metrics.k8s.io",
+      "extensions",
+      "apps"
+    ]
+
+    resources = [
+      "pods/log",
+      "events",
+      "nodes",
+      "pods",
+      "deployments",
+      "replicasets"
+    ]
+
+    verbs = [
+      "get",
+      "list"
+    ]
   }
 }
 
