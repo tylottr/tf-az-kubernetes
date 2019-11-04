@@ -66,7 +66,7 @@ resource "azurerm_resource_group" "main" {
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
-  name                = replace("${var.resource_prefix}acr${random_integer.entropy.result}", "-", "")
+  name                = replace("${var.resource_prefix}${random_integer.entropy.result}acr", "-", "")
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
