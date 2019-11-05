@@ -18,7 +18,7 @@ resource "local_file" "main_ssh_public" {
 resource "local_file" "main_ssh_private" {
   filename          = ".terraform/.ssh/id_rsa"
   sensitive_content = tls_private_key.main.private_key_pem
-  file_permission   = "0500"
+  file_permission   = "0600"
 }
 
 # Resources
@@ -165,7 +165,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 resource "local_file" "main_aks_config" {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
-  file_permission   = "0500"
+  file_permission   = "0600"
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
