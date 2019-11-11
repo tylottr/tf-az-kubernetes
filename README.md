@@ -57,6 +57,7 @@ Outputs
 -------
 
 This template will output the following information:
+
 |Output|Description|
 |-|-|
 |kubernetes_service_principal|The object ID of the Kubernetes service principal|
