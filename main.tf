@@ -241,9 +241,9 @@ resource "helm_release" "main_cert_manager" {
   ]
 
   provisioner "local-exec" {
-    command = <<EOS
-kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
-EOS
+    command = <<EOF
+kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.11/deploy/manifests/00-crds.yaml --validate=false
+EOF
   }
 
   timeout = 600

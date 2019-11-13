@@ -67,7 +67,7 @@ variable "aks_cluster_worker_disk_size" {
 variable "aks_cluster_nginx_ingress_chart_version" {
   description = "The chart version for the nginx-ingress Helm chart"
   type        = string
-  default     = "1.14.0"
+  default     = "1.24.7"
 }
 
 variable "aks_cluster_custom_backend_service" {
@@ -79,7 +79,7 @@ variable "aks_cluster_custom_backend_service" {
 variable "aks_cluster_cert_manager_chart_version" {
   description = "The chart version for the cert-manager Helm chart"
   type        = string
-  default     = "v0.9.1"
+  default     = "v0.11.0"
 }
 
 # Locals

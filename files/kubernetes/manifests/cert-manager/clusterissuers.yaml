@@ -1,5 +1,5 @@
 ---
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
@@ -8,10 +8,13 @@ spec:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: ""
     privateKeySecretRef:
-      name: letsencrypt
-    http01: {}
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
 ---
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-staging
@@ -21,4 +24,7 @@ spec:
     email: ""
     privateKeySecretRef:
       name: letsencrypt-staging
-    http01: {}
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
