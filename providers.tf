@@ -5,23 +5,35 @@ terraform {
 
 # Providers
 provider "azurerm" {
-  version = "~> 1.35"
+  version = "~> 1.36"
 }
 
 provider "azuread" {
   version = "~> 0.6"
 }
 
+locals {
+  kubeconfig = {
+    host = azurerm_kubernetes_cluster.main.kube_config[0].host
+    cluster_ca_certificate = base64decode(
+      azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate,
+    )
+
+    client_certificate = base64decode(
+      azurerm_kubernetes_cluster.main.kube_config[0].client_certificate,
+    )
+    client_key = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
+  }
+}
+
 provider "kubernetes" {
-  version = "~> 1.9"
-  host    = azurerm_kubernetes_cluster.main.kube_config[0].host
-  client_certificate = base64decode(
-    azurerm_kubernetes_cluster.main.kube_config[0].client_certificate,
-  )
-  client_key = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
-  cluster_ca_certificate = base64decode(
-    azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate,
-  )
+  version = "~> 1.10"
+
+  host                   = local.kubeconfig.host
+  cluster_ca_certificate = local.kubeconfig.cluster_ca_certificate
+
+  client_certificate = local.kubeconfig.client_certificate
+  client_key         = local.kubeconfig.client_key
 }
 
 provider "helm" {
@@ -29,14 +41,11 @@ provider "helm" {
 
   service_account = kubernetes_service_account.main_helm_tiller.metadata[0].name
   kubernetes {
-    host = azurerm_kubernetes_cluster.main.kube_config[0].host
-    client_certificate = base64decode(
-      azurerm_kubernetes_cluster.main.kube_config[0].client_certificate,
-    )
-    client_key = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
-    cluster_ca_certificate = base64decode(
-      azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate,
-    )
+    host                   = local.kubeconfig.host
+    cluster_ca_certificate = local.kubeconfig.cluster_ca_certificate
+
+    client_certificate = local.kubeconfig.client_certificate
+    client_key         = local.kubeconfig.client_key
   }
 }
 
