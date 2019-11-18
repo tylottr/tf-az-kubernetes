@@ -110,6 +110,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   dns_prefix          = "${var.resource_prefix}-aks"
   node_resource_group = "${var.resource_prefix}-aks-node-rg"
 
+  api_server_authorized_ip_ranges = ["0.0.0.0/0"]
+
   role_based_access_control {
     enabled = true
   }
