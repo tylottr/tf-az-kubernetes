@@ -22,6 +22,22 @@ resource "local_file" "main_ssh_private" {
 }
 
 # Resources
+## Azure RBAC
+locals {
+  // Using a map to split the actual inbuilt role name from the intended name
+  aad_groups = {
+    Readers      = "Reader"
+    Contributors = "Contributor"
+    Owners       = "Owner"
+  }
+}
+
+resource "azuread_group" "main_aad_rbac" {
+  for_each = local.aad_groups
+
+  name = "${var.resource_prefix}-aks ${each.key}"
+}
+
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
 resource "azuread_application" "main_aks" {
@@ -60,6 +76,14 @@ resource "azurerm_resource_group" "main" {
   name     = "${var.resource_prefix}-aks-rg"
   location = var.location
   tags     = var.tags
+}
+
+resource "azurerm_role_assignment" "main_aad_rbac" {
+  for_each = local.aad_groups
+
+  scope                = azurerm_resource_group.main.id
+  role_definition_name = each.value
+  principal_id         = azuread_group.main_aad_rbac[each.key].id
 }
 
 ## Storage
