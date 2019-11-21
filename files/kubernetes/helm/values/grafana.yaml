@@ -1,19 +1,23 @@
-# helm upgrade grafana stable/grafana --version 3.11.0 --install --namespace monitoring --values ./grafana.yaml
+# repo: helm repo add stable https://kubernetes-charts.storage.googleapis.com
+# helm2: helm install --name grafana stable/grafana --version 3.11.0 --namespace monitoring --values ./grafana.yaml
+# helm3: helm install grafana stable/grafana --version 3.11.0 --namespace monitoring --values ./grafana.yaml
 replicas: 1
 persistence:
   enabled: true
   type: pvc
-  storageClassName: azure-premium
+  storageClassName: azure-disk-premium
 affinity:
   podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector:
-        matchExpressions:
-        - key: app
-          operator: In
-          values:
-          - grafana
-      topologyKey: "kubernetes.io/hostname"
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - grafana
+        topologyKey: kubernetes.io/hostname
+      weight: 100
 
 plugins:
 - grafana-simple-json-datasource

@@ -1,16 +1,20 @@
-# helm upgrade loki loki/loki-stack --version 0.17.1 --install --namespace monitoring --values ./loki.yaml
+# helm repo add loki https://grafana.github.io/loki/charts
+# helm2: helm install --name loki loki/loki-stack --version 0.17.1 --namespace monitoring --values ./loki.yaml
+# helm3: helm install loki loki/loki-stack --version 0.17.1 --namespace monitoring --values ./loki.yaml
 loki:
   replicas: 1
   persistence:
     enabled: true
-    storageClassName: azure-premium
+    storageClassName: azure-disk-premium
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - loki
-        topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - loki
+          topologyKey: kubernetes.io/hostname
+        weight: 100

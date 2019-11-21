@@ -1,4 +1,9 @@
-# helm upgrade prometheus stable/prometheus --version 9.1.2 --install --namespace monitoring --values ./prometheus.yaml
+# repo: helm repo add stable https://kubernetes-charts.storage.googleapis.com
+# helm2: helm install --name prometheus stable/prometheus --version 9.3.1 --namespace monitoring --values ./prometheus.yaml
+# helm3: helm install prometheus stable/prometheus --version 9.3.1 --namespace monitoring --values ./prometheus.yaml
+podSecurityPolicy:
+  enabled: true
+
 server:
   replicaCount: 1
   resources:
@@ -11,18 +16,24 @@ server:
     enabled: false
   persistentVolume:
     enabled: true
-    storageClass: azure-premium
+    storageClass: azure-disk-premium
   retention: "15d"
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - prometheus
-        topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - prometheus
+            - key: component
+              operator: In
+              values:
+              - server
+          topologyKey: kubernetes.io/hostname
+        weight: 100
 
 nodeExporter:
   resources:
