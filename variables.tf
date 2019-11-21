@@ -36,7 +36,7 @@ variable "acr_sku" {
 variable "aks_cluster_kubernetes_version" {
   description = "Version of Kubernetes to use in the cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "aks_cluster_worker_min_count" {
@@ -73,7 +73,7 @@ variable "aks_cluster_nginx_ingress_chart_version" {
 variable "aks_cluster_custom_backend_service" {
   description = "The custom backend service in the format NAMESPACE/SERVICE"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "aks_cluster_cert_manager_chart_version" {

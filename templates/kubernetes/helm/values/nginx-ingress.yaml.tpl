@@ -10,13 +10,13 @@ controller:
   config:
     enable-modsecurity: "true"
     enable-owasp-modsecurity-crs: "true"
-  defaultBackendService: ${custom_backend_service != "" ? custom_backend_service : ""}
+  defaultBackendService: ${custom_backend_service == null ? "" : custom_backend_service}
   resources:
     limits:
-      cpu: 1000m
+      cpu: 500m
       memory: 768Mi
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 512Mi
   affinity:
     podAntiAffinity:
@@ -37,4 +37,4 @@ controller:
     targetCPUUtilizationPercentage: 90
     targetMemoryUtilizationPercentage: 90
 defaultBackend:
-  enabled: ${custom_backend_service != "" ? "false" : "true"}
+  enabled: ${custom_backend_service == null ? "true" : "false"}

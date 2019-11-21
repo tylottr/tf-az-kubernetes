@@ -25,11 +25,13 @@ resource "local_file" "main_ssh_private" {
 ## Azure RBAC
 locals {
   // Using a map to split the actual inbuilt role name from the intended name
-  aad_groups = {
+  aad_basic_groups = {
     Readers      = "Reader"
     Contributors = "Contributor"
     Owners       = "Owner"
   }
+
+  aad_groups = local.aad_basic_groups
 }
 
 resource "azuread_group" "main_aad_rbac" {
@@ -90,7 +92,7 @@ resource "azurerm_role_assignment" "main_aad_rbac" {
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
-  name                = replace("${var.resource_prefix}${random_integer.entropy.result}acr", "-", "")
+  name                = lower(replace("${var.resource_prefix}${random_integer.entropy.result}acr", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
@@ -129,7 +131,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     client_secret = azuread_application_password.main_aks.value
   }
 
-  kubernetes_version = var.aks_cluster_kubernetes_version != "" ? var.aks_cluster_kubernetes_version : null
+  kubernetes_version = var.aks_cluster_kubernetes_version
 
   dns_prefix          = "${var.resource_prefix}-aks"
   node_resource_group = "${var.resource_prefix}-aks-node-rg"
@@ -278,11 +280,11 @@ EOF
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Storage
-resource "kubernetes_storage_class" "main_azure" {
+resource "kubernetes_storage_class" "main_azure_disk" {
   // Default storage classes do not expand. Create these in the cluster as part of the deployment.
   for_each = {
-    "azure-standard" = "Standard_LRS"
-    "azure-premium"  = "Premium_LRS"
+    "azure-disk-standard" = "Standard_LRS"
+    "azure-disk-premium"  = "Premium_LRS"
   }
 
   metadata {

@@ -44,13 +44,13 @@ These are the variables used along with their defaults. For any without a value 
 |tags|Tags given to the resources created by this template|{}|
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|
-|aks_cluster_kubernetes_version|Version of Kubernetes to use in the cluster|[NOT REQUIRED]|
+|aks_cluster_kubernetes_version|Version of Kubernetes to use in the cluster|null|
 |aks_cluster_worker_min_count|Minimum number of workers in the AKS cluster|1|
 |aks_cluster_worker_max_count|Maximum number of workers in the AKS cluster|5|
 |aks_cluster_worker_size|Size of workers in the AKS cluster|Standard_B2ms|
 |aks_cluster_worker_disk_size|Disk size of workers in the AKS cluster (Minimum 30)|64|
 |aks_cluster_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.24.7|
-|aks_cluster_custom_backend_service|The custom backend service in the format NAMESPACE/SERVICE|[NOT REQUIRED]|
+|aks_cluster_custom_backend_service|The custom backend service in the format NAMESPACE/SERVICE|null|
 |aks_cluster_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.11.0|
 
 Outputs
