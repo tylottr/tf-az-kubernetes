@@ -150,6 +150,11 @@ resource "azurerm_kubernetes_cluster" "main" {
     enabled = true
 
     dynamic azure_active_directory {
+      /*
+       * Check for prereqs. If not satisfied, pass an empty set, forcing
+       * this dynamic block to not be set.
+       **
+      */
       for_each = local.aad_rbac_prerequisites_satisfied ? [true] : []
 
       content {
