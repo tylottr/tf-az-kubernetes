@@ -31,7 +31,15 @@ locals {
     Owners       = "Owner"
   }
 
-  aad_groups = local.aad_basic_groups
+  aad_aks_groups = {
+    "Cluster Admins" = "Azure Kubernetes Service Cluster Admin Role"
+    "Cluster Users"  = "Azure Kubernetes Service Cluster User Role"
+  }
+
+  aad_groups = merge(
+    local.aad_basic_groups,
+    local.aad_aks_groups
+  )
 }
 
 resource "azuread_group" "main_aad_rbac" {
@@ -80,8 +88,8 @@ resource "azurerm_resource_group" "main" {
   tags     = var.tags
 }
 
-resource "azurerm_role_assignment" "main_aad_rbac" {
-  for_each = local.aad_groups
+resource "azurerm_role_assignment" "main_aad_rbac_basic" {
+  for_each = local.aad_basic_groups
 
   scope                = azurerm_resource_group.main.id
   role_definition_name = each.value
@@ -140,6 +148,17 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   role_based_access_control {
     enabled = true
+
+    dynamic azure_active_directory {
+      for_each = local.aad_rbac_prerequisites_satisfied ? [true] : []
+
+      content {
+        tenant_id         = data.azurerm_client_config.current.tenant_id
+        client_app_id     = var.cluster_aad_client_app_id
+        server_app_id     = var.cluster_aad_server_app_id
+        server_app_secret = var.cluster_aad_server_app_secret
+      }
+    }
   }
 
   network_profile {
@@ -191,9 +210,22 @@ resource "azurerm_kubernetes_cluster" "main" {
 }
 
 resource "local_file" "main_aks_config" {
-  filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
-  sensitive_content = azurerm_kubernetes_cluster.main.kube_config_raw
-  file_permission   = "0600"
+  filename        = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
+  file_permission = "0600"
+
+  sensitive_content = "${
+    local.aad_rbac_prerequisites_satisfied
+    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
+    : azurerm_kubernetes_cluster.main.kube_config_raw
+  }"
+}
+
+resource "azurerm_role_assignment" "main_aad_rbac_aks" {
+  for_each = local.aad_aks_groups
+
+  scope                = azurerm_kubernetes_cluster.main.id
+  role_definition_name = each.value
+  principal_id         = azuread_group.main_aad_rbac[each.key].id
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm

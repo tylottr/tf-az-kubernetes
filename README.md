@@ -7,6 +7,7 @@ The environment deployed contains the following resources:
 * A service policy to allow K8s to access the necessary Azure resources
 * OPTIONAL: An Azure Container Registry for storing images
 * RBAC Groups with role assignments for Reader, Contributor and Owner
+* RBAC Groups with role assignments for Cluster User and Cluster Admin
 * A bootstrapped Kubernetes cluster 
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
   * Admin user named vmadmin with the ssh keys stored in .terraform/.ssh/id_rsa
@@ -30,6 +31,7 @@ Prior to deployment you need the following:
 
 In Azure, you also need:
 * A user account or service policy with Contributor level access to the target subscription and the Application Administrator AAD role
+* If using AAD RBAC Integration, you also require a Client and Server component. See [here](https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration-cli) for the steps.
 
 In addition to these packages, [VS Code](https://code.visualstudio.com/) is a useful, extensible code editor with plug-ins for Git, Terraform and more
 
@@ -46,6 +48,9 @@ These are the variables used along with their defaults. For any without a value 
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|
 |aks_cluster_kubernetes_version|Version of Kubernetes to use in the cluster|null|
+|cluster_aad_client_app_id|App ID of the client application used for AAD RBAC|null|
+|cluster_aad_server_app_id|App ID of the server application used for AAD RBAC|null|
+|cluster_aad_server_app_secret|App Secret of the server application used for AAD RBAC|null|
 |aks_cluster_worker_min_count|Minimum number of workers in the AKS cluster|1|
 |aks_cluster_worker_max_count|Maximum number of workers in the AKS cluster|5|
 |aks_cluster_worker_size|Size of workers in the AKS cluster|Standard_B2ms|

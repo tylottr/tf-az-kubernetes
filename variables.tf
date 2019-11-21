@@ -39,6 +39,30 @@ variable "aks_cluster_kubernetes_version" {
   default     = null
 }
 
+variable "enable_aad_rbac" {
+  description = "Flag to enable AAD RBAC"
+  type        = bool
+  default     = false
+}
+
+variable "cluster_aad_client_app_id" {
+  description = "App ID of the client application used for AAD RBAC"
+  type        = string
+  default     = null
+}
+
+variable "cluster_aad_server_app_id" {
+  description = "App ID of the server application used for AAD RBAC"
+  type        = string
+  default     = null
+}
+
+variable "cluster_aad_server_app_secret" {
+  description = "App Secret of the server application used for AAD RBAC"
+  type        = string
+  default     = null
+}
+
 variable "aks_cluster_worker_min_count" {
   description = "Minimum number of workers in the AKS cluster"
   type        = number
@@ -84,5 +108,12 @@ variable "aks_cluster_cert_manager_chart_version" {
 
 # Locals
 locals {
-
+  aad_rbac_prerequisites_satisfied = "${
+    var.enable_aad_rbac == true &&
+    var.cluster_aad_client_app_id != null &&
+    var.cluster_aad_server_app_id != null &&
+    var.cluster_aad_server_app_secret != null
+    ? true
+    : false
+  }"
 }
