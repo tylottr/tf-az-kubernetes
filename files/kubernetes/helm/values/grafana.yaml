@@ -5,7 +5,7 @@ replicas: 1
 persistence:
   enabled: true
   type: pvc
-  storageClassName: azure-disk-premium
+  storageClassName: azure-disk-standard
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:

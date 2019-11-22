@@ -5,7 +5,7 @@ loki:
   replicas: 1
   persistence:
     enabled: true
-    storageClassName: azure-disk-premium
+    storageClassName: azure-file-standard-lrs
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
