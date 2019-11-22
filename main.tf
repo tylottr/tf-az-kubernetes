@@ -337,6 +337,33 @@ resource "kubernetes_storage_class" "main_azure_disk" {
   }
 }
 
+resource "kubernetes_storage_class" "main_azure_file" {
+  // Default storage classes do not expand. Create these in the cluster as part of the deployment.
+  for_each = {
+    "azure-file-standard-lrs"   = "Standard_LRS"
+    "azure-file-standard-grs"   = "Standard_GRS"
+    "azure-file-standard-ragrs" = "Standard_RAGRS"
+    "azure-file-premium-lrs"    = "Premium_LRS"
+  }
+
+  metadata {
+    name = each.key
+
+    labels = {
+      "kubernetes.io/cluster-service" = "true"
+    }
+  }
+
+  storage_provisioner    = "kubernetes.io/azure-file"
+  reclaim_policy         = "Delete"
+  volume_binding_mode    = "Immediate"
+  allow_volume_expansion = "true"
+
+  parameters = {
+    skuname = each.value
+  }
+}
+
 ## Kubernetes RBAC
 ### Dashboard
 resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
