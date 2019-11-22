@@ -40,7 +40,7 @@ variable "aks_cluster_kubernetes_version" {
 }
 
 variable "enable_aad_rbac" {
-  description = "Flag to enable AAD RBAC"
+  description = "Flag used to enable AAD RBAC Integration"
   type        = bool
   default     = false
 }

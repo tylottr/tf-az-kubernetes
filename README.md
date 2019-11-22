@@ -48,6 +48,7 @@ These are the variables used along with their defaults. For any without a value 
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|
 |aks_cluster_kubernetes_version|Version of Kubernetes to use in the cluster|null|
+|enable_aad_rbac|Flag used to enable AAD RBAC integration|false|
 |cluster_aad_client_app_id|App ID of the client application used for AAD RBAC|null|
 |cluster_aad_server_app_id|App ID of the server application used for AAD RBAC|null|
 |cluster_aad_server_app_secret|App Secret of the server application used for AAD RBAC|null|
