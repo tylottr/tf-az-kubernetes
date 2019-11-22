@@ -10,7 +10,6 @@ controller:
   config:
     enable-modsecurity: "true"
     enable-owasp-modsecurity-crs: "true"
-  defaultBackendService: ${custom_backend_service == null ? "" : custom_backend_service}
   resources:
     limits:
       cpu: 500m
@@ -37,4 +36,4 @@ controller:
     targetCPUUtilizationPercentage: 90
     targetMemoryUtilizationPercentage: 90
 defaultBackend:
-  enabled: ${custom_backend_service == null ? "true" : "false"}
+  enabled: true

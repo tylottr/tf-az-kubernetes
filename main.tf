@@ -280,12 +280,7 @@ resource "helm_release" "main_ingress" {
   namespace  = "kube-system"
 
   values = [
-    templatefile(
-      "${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl",
-      {
-        custom_backend_service = var.aks_cluster_custom_backend_service
-      }
-    )
+    templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl", {})
   ]
 
   timeout = 600
