@@ -168,11 +168,12 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   network_profile {
     network_plugin    = "kubenet"
-    network_policy    = null
     load_balancer_sku = "Standard"
 
+    pod_cidr = "10.244.0.0/16"
+
+    network_policy     = null
     docker_bridge_cidr = "172.17.0.1/16"
-    pod_cidr           = "10.244.0.0/16"
     service_cidr       = "10.0.0.0/16"
     dns_service_ip     = "10.0.0.10"
   }
@@ -190,10 +191,13 @@ resource "azurerm_kubernetes_cluster" "main" {
     enable_auto_scaling   = true
     enable_node_public_ip = false
 
-    vm_size               = var.aks_cluster_worker_size
-    os_disk_size_gb       = var.aks_cluster_worker_disk_size
-    min_count             = var.aks_cluster_worker_min_count
-    max_count             = var.aks_cluster_worker_max_count
+    vm_size         = var.aks_cluster_worker_size
+    os_disk_size_gb = var.aks_cluster_worker_disk_size
+    node_count      = var.aks_cluster_worker_min_count
+    min_count       = var.aks_cluster_worker_min_count
+    max_count       = var.aks_cluster_worker_max_count
+
+    vnet_subnet_id = null
   }
 
   addon_profile {
