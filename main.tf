@@ -117,7 +117,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
   scope                = azurerm_container_registry.main[count.index].id
 }
 
-## Logging
+## Monitoring
 resource "azurerm_log_analytics_workspace" "main" {
   name                = "${var.resource_prefix}-aks-oms"
   resource_group_name = azurerm_resource_group.main.name
