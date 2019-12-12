@@ -11,12 +11,12 @@ resource "tls_private_key" "main" {
 }
 
 resource "local_file" "main_ssh_public" {
-  filename          = ".terraform/.ssh/id_rsa.pub"
+  filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}.id_rsa.pub"
   sensitive_content = tls_private_key.main.public_key_openssh
 }
 
 resource "local_file" "main_ssh_private" {
-  filename          = ".terraform/.ssh/id_rsa"
+  filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}.id_rsa"
   sensitive_content = tls_private_key.main.private_key_pem
   file_permission   = "0600"
 }
@@ -167,9 +167,10 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   network_profile {
-    network_plugin     = "kubenet"
-    network_policy     = null
-    load_balancer_sku  = "Standard"
+    network_plugin    = "kubenet"
+    network_policy    = null
+    load_balancer_sku = "Standard"
+
     docker_bridge_cidr = "172.17.0.1/16"
     pod_cidr           = "10.244.0.0/16"
     service_cidr       = "10.0.0.0/16"
@@ -183,16 +184,16 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
   }
 
-  agent_pool_profile {
-    name                = "nodepool1"
-    type                = "VirtualMachineScaleSets"
-    os_type             = "Linux"
-    count               = var.aks_cluster_worker_min_count
-    enable_auto_scaling = true
-    min_count           = var.aks_cluster_worker_min_count
-    max_count           = var.aks_cluster_worker_max_count
-    vm_size             = var.aks_cluster_worker_size
-    os_disk_size_gb     = var.aks_cluster_worker_disk_size
+  default_node_pool {
+    name                  = "default"
+    type                  = "VirtualMachineScaleSets"
+    enable_auto_scaling   = true
+    enable_node_public_ip = false
+
+    vm_size               = var.aks_cluster_worker_size
+    os_disk_size_gb       = var.aks_cluster_worker_disk_size
+    min_count             = var.aks_cluster_worker_min_count
+    max_count             = var.aks_cluster_worker_max_count
   }
 
   addon_profile {
@@ -208,7 +209,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   lifecycle {
     ignore_changes = [
-      agent_pool_profile,
+      default_node_pool,
       kubernetes_version
     ]
   }
