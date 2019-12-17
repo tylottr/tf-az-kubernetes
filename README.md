@@ -53,10 +53,10 @@ These are the variables used along with their defaults. For any without a value 
 |cluster_aad_client_app_id|App ID of the client application used for AAD RBAC|null|
 |cluster_aad_server_app_id|App ID of the server application used for AAD RBAC|null|
 |cluster_aad_server_app_secret|App Secret of the server application used for AAD RBAC|null|
-|aks_cluster_worker_min_count|Minimum number of workers in the AKS cluster|1|
-|aks_cluster_worker_max_count|Maximum number of workers in the AKS cluster|5|
-|aks_cluster_worker_size|Size of workers in the AKS cluster|Standard_B2ms|
-|aks_cluster_worker_disk_size|Disk size of workers in the AKS cluster (Minimum 30)|64|
+|aks_cluster_node_min_count|Minimum number of nodes in the AKS cluster|1|
+|aks_cluster_node_max_count|Maximum number of nodes in the AKS cluster|5|
+|aks_cluster_node_size|Size of nodes in the AKS cluster|Standard_B2ms|
+|aks_cluster_node_disk_size|Disk size of nodes in the AKS cluster (Minimum 30)|64|
 |aks_cluster_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.24.7|
 |aks_cluster_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.11.0|
 

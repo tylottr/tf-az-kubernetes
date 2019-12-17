@@ -63,26 +63,26 @@ variable "cluster_aad_server_app_secret" {
   default     = null
 }
 
-variable "aks_cluster_worker_min_count" {
-  description = "Minimum number of workers in the AKS cluster"
+variable "aks_cluster_node_min_count" {
+  description = "Minimum number of nodes in the AKS cluster"
   type        = number
   default     = 1
 }
 
-variable "aks_cluster_worker_max_count" {
-  description = "Maximum number of workers in the AKS cluster"
+variable "aks_cluster_node_max_count" {
+  description = "Maximum number of nodes in the AKS cluster"
   type        = number
   default     = 5
 }
 
-variable "aks_cluster_worker_size" {
-  description = "Size of workers in the AKS cluster"
+variable "aks_cluster_node_size" {
+  description = "Size of nodes in the AKS cluster"
   type        = string
   default     = "Standard_B2ms"
 }
 
-variable "aks_cluster_worker_disk_size" {
-  description = "Disk size of workers in the AKS cluster (Minimum 30)"
+variable "aks_cluster_node_disk_size" {
+  description = "Disk size of nodes in the AKS cluster (Minimum 30)"
   type        = number
   default     = 64
 }

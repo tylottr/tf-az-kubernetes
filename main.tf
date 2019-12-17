@@ -191,11 +191,11 @@ resource "azurerm_kubernetes_cluster" "main" {
     enable_auto_scaling   = true
     enable_node_public_ip = false
 
-    vm_size         = var.aks_cluster_worker_size
-    os_disk_size_gb = var.aks_cluster_worker_disk_size
-    node_count      = var.aks_cluster_worker_min_count
-    min_count       = var.aks_cluster_worker_min_count
-    max_count       = var.aks_cluster_worker_max_count
+    vm_size         = var.aks_cluster_node_size
+    os_disk_size_gb = var.aks_cluster_node_disk_size
+    node_count      = var.aks_cluster_node_min_count
+    min_count       = var.aks_cluster_node_min_count
+    max_count       = var.aks_cluster_node_max_count
 
     vnet_subnet_id = null
   }
