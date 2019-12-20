@@ -119,6 +119,31 @@ Manifests under [files/kubernetes/manifests/rbac](./files/kubernetes/manifests/r
 
 Additional values for some Helm charts have been stored under [files/kubernetes/helm/values](./files/kubernetes/helm/values) to provide some additional options for services to deploy to the cluster.
 
+Maintenance
+-----------
+
+As the cluster requires and has components managed by AKS, you will need to occasionally update secrets to ensure the cluster is still healthy. This can be managed with azcli.
+
+To update the AKS Service Principal, run the following command
+
+```bash
+az aks update-credentials --name $AKS_CLUSTER_NAME --resource-group $AKS_CLUSTER_RESOURCE_GROUP \
+    --reset-service-principal \
+    --service-principal $AKS_CLUSTER_APP_ID \
+    --client-secret $AKS_CLUSTER_APP_SECRET
+```
+
+To update the AAD Service Principal, run the following command
+
+```bash
+az aks update-credentials --name $AKS_CLUSTER_NAME --resource-group $AKS_CLUSTER_RESOURCE_GROUP \
+    --reset-aad \
+    --aad-tenant-id $AKS_CLUSTER_AAD_TENANT_ID \
+    --aad-client-app-id $AKS_CLUSTER_AAD_CLIENT_APP_ID \
+    --aad-server-app-id $AKS_CLUSTER_AAD_SERVER_APP_ID \
+    --aad-server-app-secret $AKS_CLUSTER_AAD_SERVER_APP_SECRET \
+```
+
 Useful Links
 ------------
 
