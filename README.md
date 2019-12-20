@@ -84,7 +84,9 @@ Below describes the steps to deploy this template.
 2. Log into Azure with `az login` and set your subscription with `az account set --subscription $ARM_SUBSCRIPTION_ID`
 3. Initialise Terraform with `terraform init`
     * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
-4. Generate a plan with `terraform plan -out tf.plan` and apply it with `terraform apply tf.plan`
+4. Set the workspace with `terraform workspace select ENVIRONMENT` - `ENVIRONMENT`
+    * If the workspace does not exist, use `terraform workspace new ENVIRONMENT`
+5. Generate a plan with `terraform plan -out tf.plan` and apply it with `terraform apply tf.plan`
 
 In the event the deployment needs to be destroyed, you can run `terraform destroy`
 
