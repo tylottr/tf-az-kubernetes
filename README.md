@@ -10,7 +10,7 @@ The environment deployed contains the following resources:
 * RBAC Groups with role assignments for Cluster User and Cluster Admin
 * A bootstrapped Kubernetes cluster 
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
-  * Admin user named vmadmin with the ssh keys stored in .terraform/.ssh/id_rsa
+  * Admin user named vmadmin with the ssh keys stored in .terraform/.kube/clusters/your_cluster_name.id_rsa
   * A read-only cluster role binding for the Kubernetes dashboard
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
