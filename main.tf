@@ -155,7 +155,7 @@ resource "azurerm_kubernetes_cluster" "main" {
        * this dynamic block to not be set.
        **
       */
-      for_each = local.aad_rbac_prerequisites_satisfied ? [true] : []
+      for_each = local.aks_cluster_aad_rbac_prerequisites_satisfied ? [true] : []
 
       content {
         tenant_id         = data.azurerm_client_config.current.tenant_id
