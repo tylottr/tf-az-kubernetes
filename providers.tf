@@ -15,25 +15,25 @@ provider "azuread" {
 locals {
   kubeconfig = {
     host = "${
-      local.aad_rbac_prerequisites_satisfied
+      local.aks_cluster_aad_rbac_prerequisites_satisfied
       ? azurerm_kubernetes_cluster.main.kube_admin_config[0].host
       : azurerm_kubernetes_cluster.main.kube_config[0].host
     }"
 
     cluster_ca_certificate = "${
-      local.aad_rbac_prerequisites_satisfied
+      local.aks_cluster_aad_rbac_prerequisites_satisfied
       ? base64decode(azurerm_kubernetes_cluster.main.kube_admin_config[0].cluster_ca_certificate)
       : base64decode(azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate)
     }"
 
     client_certificate = "${
-      local.aad_rbac_prerequisites_satisfied
+      local.aks_cluster_aad_rbac_prerequisites_satisfied
       ? base64decode(azurerm_kubernetes_cluster.main.kube_admin_config[0].client_certificate)
       : base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_certificate)
     }"
 
     client_key = "${
-      local.aad_rbac_prerequisites_satisfied
+      local.aks_cluster_aad_rbac_prerequisites_satisfied
       ? base64decode(azurerm_kubernetes_cluster.main.kube_admin_config[0].client_key)
       : base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
     }"

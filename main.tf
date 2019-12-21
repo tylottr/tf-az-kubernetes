@@ -223,11 +223,7 @@ resource "local_file" "main_aks_config" {
   filename        = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   file_permission = "0600"
 
-  sensitive_content = "${
-    local.aad_rbac_prerequisites_satisfied
-    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
-    : azurerm_kubernetes_cluster.main.kube_config_raw
-  }"
+  sensitive_content = local.main_aks_config
 }
 
 resource "azurerm_role_assignment" "main_aad_rbac_aks" {
