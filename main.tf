@@ -85,7 +85,7 @@ resource "azuread_service_principal" "main_aks" {
 resource "azurerm_resource_group" "main" {
   name     = "${var.resource_prefix}-aks-rg"
   location = var.location
-  tags     = var.tags
+  tags     = local.tags
 }
 
 resource "azurerm_role_assignment" "main_aad_rbac_basic" {
@@ -103,7 +103,7 @@ resource "azurerm_container_registry" "main" {
   name                = lower(replace("${var.resource_prefix}${random_integer.entropy.result}acr", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   sku           = var.acr_sku
   admin_enabled = false
@@ -122,7 +122,7 @@ resource "azurerm_log_analytics_workspace" "main" {
   name                = "${var.resource_prefix}-aks-${random_integer.entropy.result}-oms"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   sku = "PerGB2018"
 }
@@ -132,7 +132,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   name                = "${var.resource_prefix}-aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   service_principal {
     client_id     = azuread_service_principal.main_aks.application_id

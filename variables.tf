@@ -114,6 +114,13 @@ variable "aks_cluster_cert_manager_chart_version" {
 
 # Locals
 locals {
+  tags = merge(
+    var.tags,
+    {
+      deployedBy = "Terraform"
+    }
+  )
+
   aks_cluster_aad_rbac_prerequisites_satisfied = "${
     var.enable_aad_rbac == true &&
     var.cluster_aad_client_app_id != null &&
