@@ -6,10 +6,16 @@ terraform {
 # Providers
 provider "azurerm" {
   version = "~> 1.39"
+
+  tenant_id       = var.tenant_id
+  subscription_id = var.subscription_id
 }
 
 provider "azuread" {
   version = "~> 0.7"
+
+  tenant_id       = var.tenant_id
+  subscription_id = var.subscription_id
 }
 
 locals {

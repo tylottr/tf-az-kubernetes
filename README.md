@@ -43,6 +43,8 @@ These are the variables used along with their defaults. For any without a value 
 
 |Variable|Description|Default|
 |-|-|-|
+|tenant_id|The tenant id of this deployment|null|
+|subscription_id|The subcription id of this deployment|null|
 |location|The location of this deployment|UK South|
 |resource_prefix|A prefix for the name of the resource, used to generate the resource names|kubernetes|
 |tags|Tags given to the resources created by this template|{}|

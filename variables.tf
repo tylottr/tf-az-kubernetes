@@ -1,4 +1,16 @@
 # Global
+variable "tenant_id" {
+  description = "The tenant id of this deployment"
+  type        = string
+  default     = null
+}
+
+variable "subscription_id" {
+  description = "The subcription id of this deployment"
+  type        = string
+  default     = null
+}
+
 variable "location" {
   description = "The location of this deployment"
   type        = string
