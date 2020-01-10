@@ -6,7 +6,7 @@ variable "tenant_id" {
 }
 
 variable "subscription_id" {
-  description = "The subcription id of this deployment"
+  description = "The subscription id of this deployment"
   type        = string
   default     = null
 }
