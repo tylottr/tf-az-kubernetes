@@ -120,18 +120,9 @@ locals {
       deployedBy = "Terraform"
     }
   )
-
-  aks_cluster_aad_rbac_prerequisites_satisfied = "${
-    var.enable_aad_rbac == true &&
-    var.cluster_aad_client_app_id != null &&
-    var.cluster_aad_server_app_id != null &&
-    var.cluster_aad_server_app_secret != null
-    ? true
-    : false
-  }"
-
+  
   main_aks_config = "${
-    local.aks_cluster_aad_rbac_prerequisites_satisfied
+    var.enable_aad_rbac
     ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
     : azurerm_kubernetes_cluster.main.kube_config_raw
   }"

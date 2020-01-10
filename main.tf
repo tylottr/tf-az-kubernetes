@@ -151,11 +151,13 @@ resource "azurerm_kubernetes_cluster" "main" {
 
     dynamic azure_active_directory {
       /*
-       * Check for prereqs. If not satisfied, pass an empty set, forcing
-       * this dynamic block to not be set.
+       * If enabling RBAC and app settings are not set,
+       * an error will be returned. This is by design
+       * to avoid accidentally creating a cluster without
+       * AAD integration.
        **
       */
-      for_each = local.aks_cluster_aad_rbac_prerequisites_satisfied ? [true] : []
+      for_each = var.enable_aad_rbac ? [true] : []
 
       content {
         tenant_id         = data.azurerm_client_config.current.tenant_id
