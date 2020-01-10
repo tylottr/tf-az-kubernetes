@@ -1,18 +1,18 @@
 # Config
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.12.18"
 }
 
 # Providers
 provider "azurerm" {
-  version = "~> 1.39"
+  version = "~> 1.40.0"
 
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
 }
 
 provider "azuread" {
-  version = "~> 0.7"
+  version = "~> 0.7.0"
 
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
@@ -47,7 +47,7 @@ locals {
 }
 
 provider "kubernetes" {
-  version = "~> 1.10"
+  version = "~> 1.10.0"
 
   host                   = local.kubeconfig.host
   cluster_ca_certificate = local.kubeconfig.cluster_ca_certificate
@@ -57,7 +57,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "~> 0.10"
+  version = "~> 0.10.0"
 
   service_account = kubernetes_service_account.main_helm_tiller.metadata[0].name
   kubernetes {
@@ -70,17 +70,17 @@ provider "helm" {
 }
 
 provider "random" {
-  version = "~> 2.2"
+  version = "~> 2.2.0"
 }
 
 provider "null" {
-  version = "~> 2.1"
+  version = "~> 2.1.0"
 }
 
 provider "local" {
-  version = "~> 1.4"
+  version = "~> 1.4.0"
 }
 
 provider "tls" {
-  version = "~> 2.1"
+  version = "~> 2.1.0"
 }
