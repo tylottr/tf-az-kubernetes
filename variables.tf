@@ -120,7 +120,7 @@ locals {
       deployedBy = "Terraform"
     }
   )
-  
+
   main_aks_config = "${
     var.enable_aad_rbac
     ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
