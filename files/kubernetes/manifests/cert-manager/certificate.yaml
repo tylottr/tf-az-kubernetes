@@ -1,19 +1,18 @@
+# This certificate object should be used as a reference and customized to match your requirements.
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  name: this-cluster-local
+  # Name this resource based on your domain, or the subdomain being used e.g. www-example-com
+  name: www-example-com 
 spec:
-  secretName: this-cluster-local
+  # Set commonName to the domain or subdomain name e.g. example.com
+  commonName: www.example.com
+  # Set dnsNames to a list of alternative names e.g. www.example.com
   dnsNames:
-  - www.this-cluster.local
-  - www2.this-cluster.local
-  acme:
-    config:
-    - http01:
-        ingressClass: nginx
-      domains:
-      - www.this-cluster.local
-      - www2.this-cluster.local
+  - www.example.com
+  # Set the issuer to match the name of an existing issuer or clusterissuer
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer
+  # Set secretName to the same as the certificate name e.g. www-example-com
+  secretName: www-example-com

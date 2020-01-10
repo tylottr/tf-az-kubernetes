@@ -282,11 +282,9 @@ resource "helm_release" "main_ingress" {
   version    = var.aks_cluster_nginx_ingress_chart_version
   namespace  = "kube-system"
 
-  values = [
-    templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl", {})
-  ]
+  values = [templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl", {})]
 
-  timeout = 600
+  wait = false
 
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
@@ -299,17 +297,15 @@ resource "helm_release" "main_cert_manager" {
   version    = var.aks_cluster_cert_manager_chart_version
   namespace  = "kube-system"
 
-  values = [
-    templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.yaml.tpl", {})
-  ]
+  values = [templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.yaml.tpl", {})]
+
+  wait = false
 
   provisioner "local-exec" {
     command = <<EOF
-kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.11/deploy/manifests/00-crds.yaml --validate=false
+kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.12/deploy/manifests/00-crds.yaml --validate=false
 EOF
   }
-
-  timeout = 600
 
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }

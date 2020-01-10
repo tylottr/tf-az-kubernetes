@@ -1,15 +1,33 @@
 global:
   rbac:
     create: true
+
 replicaCount: 1
 resources:
-  limits:
-    cpu: 20m
-    memory: 64Mi
   requests:
     cpu: 10m
     memory: 32Mi
+  limits:
+    cpu: 20m
+    memory: 64Mi
+
 webhook:
-  enabled: false
+  enabled: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 20m
+      memory: 64Mi
+
 cainjector:
-  enabled: false
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 20m
+      memory: 64Mi

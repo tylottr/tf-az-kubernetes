@@ -2,13 +2,14 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt
+  name: letsencrypt-prod
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
+    # Set email to a valid email address
     email: ""
     privateKeySecretRef:
-      name: letsencrypt
+      name: letsencrypt-prod
     solvers:
     - http01:
         ingress:
@@ -21,6 +22,7 @@ metadata:
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
+    # Set email to a valid email address
     email: ""
     privateKeySecretRef:
       name: letsencrypt-staging
