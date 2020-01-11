@@ -5,8 +5,6 @@ metadata:
   # Name this resource based on your domain, or the subdomain being used e.g. www-example-com
   name: www-example-com 
 spec:
-  # Set commonName to the domain or subdomain name e.g. example.com
-  commonName: www.example.com
   # Set dnsNames to a list of alternative names e.g. www.example.com
   dnsNames:
   - www.example.com
