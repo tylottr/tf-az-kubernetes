@@ -43,6 +43,12 @@ variable "acr_sku" {
   default     = "Basic"
 }
 
+variable "acr_admin_enabled" {
+  description = "Flag used to enable ACR Admin"
+  type        = bool
+  default     = true
+}
+
 ## AKS Cluster
 ### Azure-level
 variable "aks_cluster_kubernetes_version" {

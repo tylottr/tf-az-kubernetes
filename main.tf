@@ -106,7 +106,7 @@ resource "azurerm_container_registry" "main" {
   tags                = local.tags
 
   sku           = var.acr_sku
-  admin_enabled = false
+  admin_enabled = var.acr_admin_enabled
 }
 
 resource "azurerm_role_assignment" "main_acr_pull" {
