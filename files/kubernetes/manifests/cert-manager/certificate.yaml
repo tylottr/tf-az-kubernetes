@@ -1,9 +1,8 @@
-# This certificate object should be used as a reference and customized to match your requirements.
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  # Name this resource based on your domain, or the subdomain being used e.g. www-example-com
-  name: www-example-com 
+  # Name this resource based on your domain, or the subdomain being used e.g. www.example.com.cert
+  name: www.example.com.cert
 spec:
   # Set dnsNames to a list of alternative names e.g. www.example.com
   dnsNames:
@@ -12,5 +11,5 @@ spec:
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer
-  # Set secretName to the same as the certificate name e.g. www-example-com
-  secretName: www-example-com
+  # Set secretName to the same as the certificate name e.g. www.example.com.cert
+  secretName: www.example.com.cert
