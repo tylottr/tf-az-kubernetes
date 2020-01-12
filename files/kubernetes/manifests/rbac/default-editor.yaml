@@ -1,0 +1,19 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: edit-user
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: 
+  name: edit-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: edit-user
+  namespace: default
