@@ -7,7 +7,7 @@ spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     # Set email to a valid email address
-    email: ""
+    email: ''
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:
@@ -23,7 +23,7 @@ spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     # Set email to a valid email address
-    email: ""
+    email: ''
     privateKeySecretRef:
       name: letsencrypt-staging
     solvers:
