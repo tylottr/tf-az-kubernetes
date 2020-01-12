@@ -132,19 +132,19 @@ As the cluster requires and has components managed by AKS, you will need to occa
 To update the AKS Service Principal, run the following command
 
 ```bash
-az aks update-credentials --name $AKS_CLUSTER_NAME --resource-group $AKS_CLUSTER_RESOURCE_GROUP \
+az aks update-credentials --name <replace with aks clutser name> --resource-group <replace with aks cluster resource group> \
     --reset-service-principal \
-    --service-principal $AKS_CLUSTER_APP_ID \
-    --client-secret $AKS_CLUSTER_APP_SECRET
+    --service-principal <replace with cluster client id> \
+    --client-secret <replace with cluster client secret>
 ```
 
 To update the AAD Service Principal, run the following command
 
 ```bash
-az aks update-credentials --name $AKS_CLUSTER_NAME --resource-group $AKS_CLUSTER_RESOURCE_GROUP \
+az aks update-credentials --name <replace with aks clutser name> --resource-group <replace with aks cluster resource group> \
     --reset-aad \
-    --aad-tenant-id $AKS_CLUSTER_AAD_TENANT_ID \
-    --aad-client-app-id $AKS_CLUSTER_AAD_CLIENT_APP_ID \
-    --aad-server-app-id $AKS_CLUSTER_AAD_SERVER_APP_ID \
-    --aad-server-app-secret $AKS_CLUSTER_AAD_SERVER_APP_SECRET \
+    --aad-tenant-id <replace with cluster aad tenant id> \
+    --aad-client-app-id <replace with cluster aad client app id> \
+    --aad-server-app-id <replace with cluster aad server app id> \
+    --aad-server-app-secret <replace with cluster aad server app secret> \
 ```
