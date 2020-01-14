@@ -7,11 +7,13 @@ The environment deployed contains the following resources:
 * A service policy to allow K8s to access the necessary Azure resources
 * OPTIONAL: An Azure Container Registry for storing images
 * RBAC Groups with role assignments for Reader, Contributor and Owner
-* RBAC Groups with role assignments for Cluster User and Cluster Admin
+* RBAC Groups with role assignments for Azure Cluster Admin Config Access and Azure Cluster User Config Access
+* RBAC Groups for in-cluster cluster-admins and viewers
 * A bootstrapped Kubernetes cluster 
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
   * Admin user named vmadmin with the ssh keys stored in .terraform/.kube/clusters/your_cluster_name.id_rsa
   * A read-only cluster role binding for the Kubernetes dashboard
+  * A cluster-admin and view cluster role binding to an AAD Group
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
     * stable/nginx-ingress

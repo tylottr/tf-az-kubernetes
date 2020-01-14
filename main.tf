@@ -32,13 +32,19 @@ locals {
   }
 
   aad_aks_groups = {
-    "Cluster Admins" = "Azure Kubernetes Service Cluster Admin Role"
-    "Cluster Users"  = "Azure Kubernetes Service Cluster User Role"
+    "Azure Cluster Admin Config Access" = "Azure Kubernetes Service Cluster Admin Role"
+    "Azure Cluster User Config Access"  = "Azure Kubernetes Service Cluster User Role"
   }
+
+  kubernetes_rbac_groups = var.enable_aad_rbac ? {
+    "Kubernetes Cluster Admins"  = "cluster-admin"
+    "Kubernetes Cluster Viewers" = "view"
+  } : {}
 
   aad_groups = merge(
     local.aad_basic_groups,
-    local.aad_aks_groups
+    local.aad_aks_groups,
+    local.kubernetes_rbac_groups
   )
 }
 
@@ -257,9 +263,9 @@ resource "kubernetes_cluster_role_binding" "main_helm_tiller" {
   }
 
   subject {
+    namespace = kubernetes_service_account.main_helm_tiller.metadata[0].namespace
     kind      = "ServiceAccount"
     name      = kubernetes_service_account.main_helm_tiller.metadata[0].name
-    namespace = kubernetes_service_account.main_helm_tiller.metadata[0].namespace
   }
 }
 
@@ -380,5 +386,27 @@ resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
     kind      = "ServiceAccount"
     name      = "kubernetes-dashboard"
     namespace = "kube-system"
+  }
+}
+
+### RBAC-Integrated Users
+resource "kubernetes_cluster_role_binding" "main_aad_rbac_groups" {
+  for_each = local.kubernetes_rbac_groups
+
+  metadata {
+    name = replace(azuread_group.main_aad_rbac[each.key].name, " ", "-")
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = each.value
+  }
+
+  subject {
+    namespace = "kube-system"
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Group"
+    name      = azuread_group.main_aad_rbac[each.key].id
   }
 }
