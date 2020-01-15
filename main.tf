@@ -26,8 +26,8 @@ resource "local_file" "main_ssh_private" {
 locals {
   aad_kubernetes_groups = {
     // Pair is { <group name> = <cluster role> }
-    "Kubernetes Cluster Admin"  = "cluster-admin"
-    "Kubernetes Cluster Viewer" = "view"
+    "Kubernetes Cluster Admins"  = "cluster-admin"
+    "Kubernetes Cluster Viewers" = "view"
   }
 
   aad_groups = merge(
