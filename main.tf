@@ -24,31 +24,18 @@ resource "local_file" "main_ssh_private" {
 # Resources
 ## Azure RBAC
 locals {
-  // Using a map to split the actual inbuilt role name from the intended name
-  aad_basic_groups = {
-    Readers      = "Reader"
-    Contributors = "Contributor"
-    Owners       = "Owner"
+  aad_kubernetes_groups = {
+    // Pair is { <group name> = <cluster role> }
+    "Kubernetes Cluster Admin"  = "cluster-admin"
+    "Kubernetes Cluster Viewer" = "view"
   }
-
-  aad_aks_groups = {
-    "Azure Cluster Admin Config Access" = "Azure Kubernetes Service Cluster Admin Role"
-    "Azure Cluster User Config Access"  = "Azure Kubernetes Service Cluster User Role"
-  }
-
-  kubernetes_rbac_groups = var.enable_aad_rbac ? {
-    "Kubernetes Cluster Admins"  = "cluster-admin"
-    "Kubernetes Cluster Viewers" = "view"
-  } : {}
 
   aad_groups = merge(
-    local.aad_basic_groups,
-    local.aad_aks_groups,
-    local.kubernetes_rbac_groups
+    local.aad_kubernetes_groups
   )
 }
 
-resource "azuread_group" "main_aad_rbac" {
+resource "azuread_group" "main" {
   for_each = local.aad_groups
 
   name = "${var.resource_prefix}-aks ${each.key}"
@@ -94,14 +81,6 @@ resource "azurerm_resource_group" "main" {
   tags     = local.tags
 }
 
-resource "azurerm_role_assignment" "main_aad_rbac_basic" {
-  for_each = local.aad_basic_groups
-
-  scope                = azurerm_resource_group.main.id
-  role_definition_name = each.value
-  principal_id         = azuread_group.main_aad_rbac[each.key].id
-}
-
 ## Storage
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
@@ -118,9 +97,9 @@ resource "azurerm_container_registry" "main" {
 resource "azurerm_role_assignment" "main_acr_pull" {
   count = var.enable_acr ? 1 : 0
 
-  principal_id         = azuread_service_principal.main_aks.id
-  role_definition_name = "AcrPull"
   scope                = azurerm_container_registry.main[count.index].id
+  role_definition_name = "AcrPull"
+  principal_id         = azuread_service_principal.main_aks.id
 }
 
 ## Monitoring
@@ -131,6 +110,14 @@ resource "azurerm_log_analytics_workspace" "main" {
   tags                = local.tags
 
   sku = "PerGB2018"
+}
+
+resource "azurerm_role_assignment" "main_oms_readers" {
+  for_each = local.aad_kubernetes_groups
+
+  scope                = azurerm_log_analytics_workspace.main.id
+  role_definition_name = "Reader"
+  principal_id         = azuread_group.main[each.key].id
 }
 
 ## Kubernetes Compute (Azure-level)
@@ -234,12 +221,20 @@ resource "local_file" "main_aks_config" {
   sensitive_content = local.main_aks_config
 }
 
-resource "azurerm_role_assignment" "main_aad_rbac_aks" {
-  for_each = local.aad_aks_groups
+resource "azurerm_role_assignment" "main_aks_readers" {
+  for_each = local.aad_kubernetes_groups
 
   scope                = azurerm_kubernetes_cluster.main.id
-  role_definition_name = each.value
-  principal_id         = azuread_group.main_aad_rbac[each.key].id
+  role_definition_name = "Reader"
+  principal_id         = azuread_group.main[each.key].id
+}
+
+resource "azurerm_role_assignment" "main_aks_users" {
+  for_each = local.aad_kubernetes_groups
+
+  scope                = azurerm_kubernetes_cluster.main.id
+  role_definition_name = "Azure Kubernetes Service Cluster User Role"
+  principal_id         = azuread_group.main[each.key].id
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
@@ -390,11 +385,11 @@ resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
 }
 
 ### RBAC-Integrated Users
-resource "kubernetes_cluster_role_binding" "main_aad_rbac_groups" {
-  for_each = local.kubernetes_rbac_groups
+resource "kubernetes_cluster_role_binding" "main_aad_groups" {
+  for_each = local.aad_kubernetes_groups
 
   metadata {
-    name = replace(azuread_group.main_aad_rbac[each.key].name, " ", "-")
+    name = replace(azuread_group.main[each.key].name, " ", "-")
   }
 
   role_ref {
@@ -407,6 +402,6 @@ resource "kubernetes_cluster_role_binding" "main_aad_rbac_groups" {
     namespace = "kube-system"
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
-    name      = azuread_group.main_aad_rbac[each.key].id
+    name      = azuread_group.main[each.key].id
   }
 }

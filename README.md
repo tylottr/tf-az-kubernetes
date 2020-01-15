@@ -6,8 +6,6 @@ This template will create a Kubernetes environment and bootstrap it so it is rea
 The environment deployed contains the following resources:
 * A service policy to allow K8s to access the necessary Azure resources
 * OPTIONAL: An Azure Container Registry for storing images
-* RBAC Groups with role assignments for Reader, Contributor and Owner
-* RBAC Groups with role assignments for Azure Cluster Admin Config Access and Azure Cluster User Config Access
 * RBAC Groups for in-cluster cluster-admins and viewers
 * A bootstrapped Kubernetes cluster 
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
