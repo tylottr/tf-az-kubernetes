@@ -356,7 +356,6 @@ resource "kubernetes_storage_class" "main_azure_file" {
 
   storage_provisioner    = "kubernetes.io/azure-file"
   reclaim_policy         = "Delete"
-  volume_binding_mode    = "Immediate"
   allow_volume_expansion = "true"
 
   parameters = {
@@ -392,8 +391,8 @@ resource "kubernetes_cluster_role" "main_oms_reader" {
 
   rule {
     api_groups = ["", "metrics.k8s.io", "extensions", "apps"]
-    resources = ["pods/log", "events", "nodes", "pods", "deployments", "replicasets"]
-    verbs = ["get", "list"]
+    resources  = ["pods/log", "events", "nodes", "pods", "deployments", "replicasets"]
+    verbs      = ["get", "list"]
   }
 }
 
