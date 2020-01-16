@@ -11,6 +11,7 @@ The environment deployed contains the following resources:
   * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
   * Admin user named vmadmin with the ssh keys stored in .terraform/.kube/clusters/your_cluster_name.id_rsa
   * A read-only cluster role binding for the Kubernetes dashboard
+  * A read-only binding allowing OMS to use the clusterUser account necessary access
   * A cluster-admin and view cluster role binding to an AAD Group
   * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
