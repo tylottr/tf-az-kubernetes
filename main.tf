@@ -379,8 +379,40 @@ resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
 
   subject {
     kind      = "ServiceAccount"
-    name      = "kubernetes-dashboard"
     namespace = "kube-system"
+    name      = "kubernetes-dashboard"
+  }
+}
+
+### OMS Integration (Only effective if AAD Integration is not enabled)
+resource "kubernetes_cluster_role" "main_oms_reader" {
+  metadata {
+    name = "containerHealth-log-reader"
+  }
+
+  rule {
+    api_groups = ["", "metrics.k8s.io", "extensions", "apps"]
+    resources = ["pods/log", "events", "nodes", "pods", "deployments", "replicasets"]
+    verbs = ["get", "list"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "main_oms_reader" {
+  metadata {
+    name = "containerHealth-read-logs-global"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.main_oms_reader.metadata[0].name
+  }
+
+  subject {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "User"
+    namespace = "kube-system"
+    name      = "clusterUser"
   }
 }
 
@@ -399,9 +431,9 @@ resource "kubernetes_cluster_role_binding" "main_aad_groups" {
   }
 
   subject {
-    namespace = "kube-system"
     api_group = "rbac.authorization.k8s.io"
     kind      = "Group"
+    namespace = "kube-system"
     name      = azuread_group.main[each.key].id
   }
 }
