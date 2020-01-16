@@ -16,10 +16,10 @@ webhook:
   replicaCount: 1
   resources:
     requests:
-      cpu: 10m
+      cpu: 25m
       memory: 32Mi
     limits:
-      cpu: 20m
+      cpu: 50m
       memory: 64Mi
 
 cainjector:
