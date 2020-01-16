@@ -167,7 +167,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
     pod_cidr = "10.244.0.0/16"
 
-    network_policy     = null
+    network_policy     = "calico"
     docker_bridge_cidr = "172.17.0.1/16"
     service_cidr       = "10.0.0.0/16"
     dns_service_ip     = "10.0.0.10"
