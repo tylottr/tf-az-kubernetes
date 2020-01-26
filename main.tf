@@ -304,7 +304,7 @@ resource "helm_release" "main_cert_manager" {
 
   provisioner "local-exec" {
     command = <<EOF
-kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.12/deploy/manifests/00-crds.yaml --validate=false
+kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.13/deploy/manifests/00-crds.yaml --validate=false
 EOF
   }
 
