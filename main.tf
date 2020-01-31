@@ -56,7 +56,7 @@ resource "random_password" "main_aks" {
 
 resource "azuread_application_password" "main_aks" {
   application_object_id = azuread_application.main_aks.id
-  value                 = random_password.main_aks_secret.result
+  value                 = random_password.main_aks.result
   end_date_relative     = "43800h" # 5 years
 }
 
