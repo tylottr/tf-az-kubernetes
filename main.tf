@@ -75,7 +75,7 @@ resource "azuread_service_principal" "main_aks" {
 }
 
 data "azuread_service_principal" "main_aks" {
-  application_id = azuread_application.main_aks.application_id
+  application_id = azuread_service_principal.main_aks.application_id
 }
 
 ## Resource Group
