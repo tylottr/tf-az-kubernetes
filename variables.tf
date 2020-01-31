@@ -121,7 +121,7 @@ variable "aks_cluster_node_disk_size" {
 variable "aks_cluster_nginx_ingress_chart_version" {
   description = "The chart version for the nginx-ingress Helm chart"
   type        = string
-  default     = "1.27.0"
+  default     = "1.29.2"
 }
 
 variable "aks_cluster_cert_manager_chart_version" {
