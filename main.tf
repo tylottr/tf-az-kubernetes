@@ -50,7 +50,7 @@ resource "azuread_application" "main_aks" {
   homepage                   = "https://${var.resource_prefix}-aks"
 }
 
-resource "random_password" "main_aks_secret" {
+resource "random_password" "main_aks" {
   length = 40
 }
 
