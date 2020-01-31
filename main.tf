@@ -74,6 +74,10 @@ resource "azuread_service_principal" "main_aks" {
   }
 }
 
+data "azuread_service_principal" "main_aks" {
+  application_id = azuread_application.main_aks.application_id
+}
+
 ## Resource Group
 resource "azurerm_resource_group" "main" {
   name     = "${var.resource_prefix}-aks-rg"
@@ -99,7 +103,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
-  principal_id         = azuread_service_principal.main_aks.id
+  principal_id         = data.azuread_service_principal.main_aks.id
 }
 
 ## Monitoring
@@ -128,7 +132,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   tags                = local.tags
 
   service_principal {
-    client_id     = azuread_service_principal.main_aks.application_id
+    client_id     = data.azuread_service_principal.main_aks.application_id
     client_secret = azuread_application_password.main_aks.value
   }
 
