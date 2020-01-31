@@ -11,6 +11,18 @@ variable "subscription_id" {
   default     = null
 }
 
+variable "client_id" {
+  description = "The client id used to authenticate to Azure"
+  type        = string
+  default     = null
+}
+
+variable "client_secret" {
+  description = "The client secret used to authenticate to Azure"
+  type        = string
+  default     = null
+}
+
 variable "location" {
   description = "The location of this deployment"
   type        = string
