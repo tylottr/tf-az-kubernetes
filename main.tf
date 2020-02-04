@@ -287,7 +287,7 @@ resource "helm_release" "main_ingress" {
   version    = var.aks_cluster_nginx_ingress_chart_version
   namespace  = "kube-system"
 
-  values = [templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.yaml.tpl", {})]
+  values = [templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.tpl.yaml", {})]
 
   wait = false
 
@@ -302,7 +302,7 @@ resource "helm_release" "main_cert_manager" {
   version    = var.aks_cluster_cert_manager_chart_version
   namespace  = "kube-system"
 
-  values = [templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.yaml.tpl", {})]
+  values = [templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.tpl.yaml", {})]
 
   wait = false
 
