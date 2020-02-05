@@ -75,6 +75,7 @@ resource "azuread_service_principal" "main_aks" {
 }
 
 data "azuread_service_principal" "main_aks" {
+  // This data source is used here to ensure we can optionally provide our own AAD Application as opposed to the Terraform-managed one in future.
   application_id = azuread_service_principal.main_aks.application_id
 }
 
