@@ -6,6 +6,10 @@ resource "random_integer" "entropy" {
   max = 99
 }
 
+locals {
+  resource_prefix = var.enable_name_entropy ? "${var.resource_prefix}-${random_integer.entropy.result}" : var.resource_prefix
+}
+
 resource "tls_private_key" "main" {
   algorithm = "RSA"
 }
@@ -19,16 +23,6 @@ resource "local_file" "main_ssh_private" {
   filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}.id_rsa"
   sensitive_content = tls_private_key.main.private_key_pem
   file_permission   = "0600"
-}
-
-locals {
-  resource_prefix = var.enable_name_entropy ? "${var.resource_prefix}-${random_integer.entropy.result}" : var.resource_prefix
-
-  main_aks_config = "${
-    var.enable_aad_rbac
-    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
-    : azurerm_kubernetes_cluster.main.kube_config_raw
-  }"
 }
 
 # Resources
@@ -215,6 +209,14 @@ resource "azurerm_kubernetes_cluster" "main" {
       kubernetes_version
     ]
   }
+}
+
+locals {
+  main_aks_config = "${
+    var.enable_aad_rbac
+    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
+    : azurerm_kubernetes_cluster.main.kube_config_raw
+  }"
 }
 
 resource "local_file" "main_aks_config" {
