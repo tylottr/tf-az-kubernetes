@@ -42,6 +42,12 @@ variable "tags" {
 }
 
 # Resource-specific
+variable "enable_name_entropy" {
+  description = "Assign random number to resource names"
+  type        = bool
+  default     = false
+}
+
 ## Azure Container Registry
 variable "enable_acr" {
   description = "Flag used to enable ACR"
@@ -138,10 +144,4 @@ locals {
       deployedBy = "Terraform"
     }
   )
-
-  main_aks_config = "${
-    var.enable_aad_rbac
-    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
-    : azurerm_kubernetes_cluster.main.kube_config_raw
-  }"
 }

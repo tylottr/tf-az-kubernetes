@@ -21,6 +21,16 @@ resource "local_file" "main_ssh_private" {
   file_permission   = "0600"
 }
 
+locals {
+  resource_prefix = var.enable_name_entropy ? "${var.resource_prefix}-${random_integer.entropy.result}" : var.resource_prefix
+
+  main_aks_config = "${
+    var.enable_aad_rbac
+    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
+    : azurerm_kubernetes_cluster.main.kube_config_raw
+  }"
+}
+
 # Resources
 ## Azure RBAC
 locals {
@@ -38,16 +48,13 @@ locals {
 resource "azuread_group" "main" {
   for_each = local.aad_groups
 
-  name = "${var.resource_prefix}-aks ${each.key}"
+  name = "${local.resource_prefix}-aks ${each.key}"
 }
 
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
 resource "azuread_application" "main_aks" {
-  name                       = "${var.resource_prefix}-aks"
-  available_to_other_tenants = false
-  oauth2_allow_implicit_flow = false
-  homepage                   = "https://${var.resource_prefix}-aks"
+  name = local.resource_prefix
 }
 
 resource "random_password" "main_aks" {
@@ -61,17 +68,8 @@ resource "azuread_application_password" "main_aks" {
 }
 
 resource "azuread_service_principal" "main_aks" {
-  application_id = azuread_application.main_aks.application_id
-
-  provisioner "local-exec" {
-    /* This will fail on Windows, due to the lack of sleep command.
-     * It may cause the template to fail due to the provider - in
-     * which case, re-run the Apply command.
-     **
-    */
-    on_failure = continue
-    command    = "sleep 45"
-  }
+  application_id               = azuread_application.main_aks.application_id
+  app_role_assignment_required = false
 }
 
 data "azuread_service_principal" "main_aks" {
@@ -81,7 +79,7 @@ data "azuread_service_principal" "main_aks" {
 
 ## Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "${var.resource_prefix}-aks-rg"
+  name     = "${local.resource_prefix}-aks-rg"
   location = var.location
   tags     = local.tags
 }
@@ -90,7 +88,7 @@ resource "azurerm_resource_group" "main" {
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
-  name                = lower(replace("${var.resource_prefix}${random_integer.entropy.result}acr", "/[-_]/", ""))
+  name                = lower(replace("${local.resource_prefix}acr", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -109,7 +107,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
 ## Monitoring
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${var.resource_prefix}-aks-${random_integer.entropy.result}-oms"
+  name                = "${local.resource_prefix}-aks-oms"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -127,7 +125,7 @@ resource "azurerm_role_assignment" "main_oms_readers" {
 
 ## Kubernetes Compute (Azure-level)
 resource "azurerm_kubernetes_cluster" "main" {
-  name                = "${var.resource_prefix}-aks"
+  name                = local.resource_prefix
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -139,8 +137,8 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   kubernetes_version = var.aks_cluster_kubernetes_version
 
-  dns_prefix          = "${var.resource_prefix}-aks"
-  node_resource_group = "${var.resource_prefix}-aks-node-rg"
+  dns_prefix          = local.resource_prefix
+  node_resource_group = "${local.resource_prefix}-aks-node-rg"
 
   api_server_authorized_ip_ranges = ["0.0.0.0/0"]
 
