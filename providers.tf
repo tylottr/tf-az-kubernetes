@@ -57,7 +57,8 @@ locals {
 provider "kubernetes" {
   version = "~> 1.10.0"
 
-  config_path = local.kubeconfig.config_path
+  config_path      = local.kubeconfig.config_path
+  load_config_file = false
 
   host                   = local.kubeconfig.host
   cluster_ca_certificate = local.kubeconfig.cluster_ca_certificate
@@ -71,7 +72,8 @@ provider "helm" {
 
   service_account = kubernetes_service_account.main_helm_tiller.metadata[0].name
   kubernetes {
-    config_path = local.kubeconfig.config_path
+    config_path      = local.kubeconfig.config_path
+    load_config_file = false
 
     host                   = local.kubeconfig.host
     cluster_ca_certificate = local.kubeconfig.cluster_ca_certificate
