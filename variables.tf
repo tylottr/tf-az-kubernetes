@@ -42,12 +42,6 @@ variable "tags" {
 }
 
 # Resource-specific
-variable "enable_name_entropy" {
-  description = "Assign random number to resource names"
-  type        = bool
-  default     = false
-}
-
 ## Azure Container Registry
 variable "enable_acr" {
   description = "Flag used to enable ACR"

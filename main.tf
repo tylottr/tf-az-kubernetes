@@ -7,7 +7,7 @@ resource "random_integer" "entropy" {
 }
 
 locals {
-  resource_prefix = var.enable_name_entropy ? "${var.resource_prefix}-${random_integer.entropy.result}" : var.resource_prefix
+  resource_prefix = var.resource_prefix
 }
 
 resource "tls_private_key" "main" {
@@ -48,7 +48,7 @@ resource "azuread_group" "main" {
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
 resource "azuread_application" "main_aks" {
-  name = local.resource_prefix
+  name = "${local.resource_prefix}-aks"
 }
 
 resource "random_password" "main_aks" {
@@ -119,7 +119,7 @@ resource "azurerm_role_assignment" "main_oms_readers" {
 
 ## Kubernetes Compute (Azure-level)
 resource "azurerm_kubernetes_cluster" "main" {
-  name                = local.resource_prefix
+  name                = "${local.resource_prefix}-aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -131,7 +131,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   kubernetes_version = var.aks_cluster_kubernetes_version
 
-  dns_prefix          = local.resource_prefix
+  dns_prefix          = "${local.resource_prefix}-aks"
   node_resource_group = "${local.resource_prefix}-aks-node-rg"
 
   api_server_authorized_ip_ranges = ["0.0.0.0/0"]

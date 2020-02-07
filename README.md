@@ -49,7 +49,6 @@ These are the variables used along with their defaults. For any without a value 
 |location|The location of this deployment|UK South|
 |resource_prefix|A prefix for the name of the resource, used to generate the resource names|kubernetes|
 |tags|Tags given to the resources created by this template|{}|
-|enable_name_entropy|Assign random number to resource names|false|
 |enable_acr|Flag used to enable ACR|true|
 |acr_sku|SKU of the ACR|Basic|
 |acr_admin_enabled|Flag used to enable ACR Admin|true|
