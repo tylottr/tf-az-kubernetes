@@ -1,23 +1,19 @@
-output "kubernetes_service_principal" {
-  value = data.azuread_service_principal.main_aks.application_id
+output "aks_cluster" {
+  description = "Provides details of the AKS Cluster"
+  value = {
+    name                = azurerm_kubernetes_cluster.main.name
+    resource_group      = azurerm_kubernetes_cluster.main.resource_group_name
+    node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
+
+    service_principal_application_id = data.azuread_service_principal.main_aks.application_id
+    service_principal_object_id      = data.azuread_service_principal.main_aks.object_id
+  }
 }
 
-output "kubernetes_cluster_name" {
-  value = azurerm_kubernetes_cluster.main.name
-}
-
-output "kubernetes_rg_name" {
-  value = azurerm_resource_group.main.name
-}
-
-output "kubernetes_node_rg_name" {
-  value = azurerm_kubernetes_cluster.main.node_resource_group
-}
-
-output "acr_name" {
-  value = var.enable_acr ? azurerm_container_registry.main[0].name : null
-}
-
-output "acr_id" {
-  value = var.enable_acr ? azurerm_container_registry.main[0].id : null
+output "container_registry" {
+  description = "Provides details of the Container Registry"
+  value = var.enable_acr ? {
+    name        = azurerm_container_registry.main[0].name
+    resource_id = azurerm_container_registry.main[0].id
+  } : null
 }

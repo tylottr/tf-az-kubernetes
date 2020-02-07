@@ -71,12 +71,8 @@ This template will output the following information:
 
 |Output|Description|
 |-|-|
-|kubernetes_service_principal|The object ID of the Kubernetes service principal|
-|kubernetes_cluster_name|The name of the kubernetes cluster|
-|kubernetes_rg_name|The name of the kubernetes cluster resource group|
-|kubernetes_node_rg_name|The name of the kubernetes cluster's node resource group|
-|acr_name|The name of the ACR|
-|acr_id|The ID of the ACR|
+|aks_cluster|Provides details of the AKS Cluster|
+|container_registry|Provides details of the Container Registry|
 
 Deployment
 ----------
