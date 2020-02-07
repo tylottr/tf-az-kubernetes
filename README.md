@@ -81,19 +81,27 @@ Below describes the steps to deploy this template.
 
 1. Set variables for the deployment
     * Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables)
-2. Log into Azure with `az login` and set your subscription with `az account set --subscription '<replace with subscription id or name>'`
+2. Log into Azure with `az login` and set your subscription with `az account set --subscription='<replace with subscription id or name>'`
     * Terraform has a number of ways to authenticate. See [here](https://www.terraform.io/docs/providers/azurerm/guides/azure_cli.html)
 3. Initialise Terraform with `terraform init`
     * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
 4. Set the workspace with `terraform workspace select <replace with environment>`
     * If the workspace does not exist, use `terraform workspace new <replace with environment>`
-5. Generate a plan with `terraform plan -out tf.plan`
+5. Generate a plan with `terraform plan -out=tf.plan`
 6. If the plan passes, apply it with `terraform apply tf.plan`
 
 In the event the deployment needs to be destroyed, you can run `terraform destroy` in place of steps 5 and 6.
 
 Post-Deployment
 ---------------
+
+### Connecting to the Cluster
+
+You can connect to your new cluster using two methods:
+
+1. Use the Kubeconfig file created under `.terraform/.kube/clusters` directory to get immediate access
+2. Run `az aks get-credentials --name=<replace with cluster name> --resource-group=<replace with cluster resource group>`
+    * If using RBAC integration, ensure you are also in the group (inherited or not) created as part of the Terraform run. These groups will be named `<cluster name> Kubernetes Cluster <role>`
 
 ### Kubernetes
 
@@ -135,19 +143,19 @@ As the cluster requires and has components managed by AKS, you will need to occa
 To update the AKS Service Principal, run the following command
 
 ```bash
-az aks update-credentials --name <replace with aks cluster name> --resource-group <replace with aks cluster resource group> \
+az aks update-credentials --name=<replace with aks cluster name> --resource-group=<replace with aks cluster resource group> \
     --reset-service-principal \
-    --service-principal <replace with cluster client id> \
-    --client-secret <replace with cluster client secret>
+    --service-principal=<replace with cluster client id> \
+    --client-secret=<replace with cluster client secret>
 ```
 
 To update the AAD Service Principal, run the following command
 
 ```bash
-az aks update-credentials --name <replace with aks cluster name> --resource-group <replace with aks cluster resource group> \
+az aks update-credentials --name=<replace with aks cluster name> --resource-group=<replace with aks cluster resource group> \
     --reset-aad \
-    --aad-tenant-id <replace with cluster aad tenant id> \
-    --aad-client-app-id <replace with cluster aad client app id> \
-    --aad-server-app-id <replace with cluster aad server app id> \
-    --aad-server-app-secret <replace with cluster aad server app secret> \
+    --aad-tenant-id=<replace with cluster aad tenant id> \
+    --aad-client-app-id=<replace with cluster aad client app id> \
+    --aad-server-app-id=<replace with cluster aad server app id> \
+    --aad-server-app-secret=<replace with cluster aad server app secret> \
 ```
