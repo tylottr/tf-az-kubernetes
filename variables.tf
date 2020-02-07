@@ -93,6 +93,12 @@ variable "cluster_aad_server_app_secret" {
   default     = null
 }
 
+variable "aks_cluster_node_vm_admin" {
+  description = "Username for the node VM administrator"
+  type        = string
+  default     = "vmadmin"
+}
+
 variable "aks_cluster_node_min_count" {
   description = "Minimum number of nodes in the AKS cluster"
   type        = number
