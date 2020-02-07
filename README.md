@@ -1,5 +1,4 @@
-Terraform: Azure Kubernetes
-===========================
+# Terraform: Azure Kubernetes
 
 This template will create a Kubernetes environment and bootstrap it so it is ready for use.
 
@@ -21,8 +20,7 @@ The environment deployed contains the following resources:
 
 Following deployment there are some additional steps that need to be performed that are specific to the application - see the Post Deployment section.
 
-Prerequisites
--------------
+## Prerequisites
 
 Prior to deployment you need the following:
 * [azcli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
@@ -35,8 +33,7 @@ In Azure, you also need:
 * If using AAD RBAC Integration, you also require a Client and Server component. See [here](https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration-cli) for the steps
     * For viewing live data, also consult [this](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-livedata-setup) page
 
-Variables
----------
+## Variables
 
 These are the variables used along with their defaults. For any without a value in default, the value must be filled in unless otherwise sateted otherwise the deployment will encounter failures.
 
@@ -65,8 +62,7 @@ These are the variables used along with their defaults. For any without a value 
 |aks_cluster_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.29.2|
 |aks_cluster_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.13.0|
 
-Outputs
--------
+## Outputs
 
 This template will output the following information:
 
@@ -75,8 +71,7 @@ This template will output the following information:
 |aks_cluster|Provides details of the AKS Cluster|
 |container_registry|Provides details of the Container Registry|
 
-Deployment
-----------
+## Deployment
 
 Below describes the steps to deploy this template.
 
@@ -93,8 +88,7 @@ Below describes the steps to deploy this template.
 
 In the event the deployment needs to be destroyed, you can run `terraform destroy` in place of steps 5 and 6.
 
-Post-Deployment
----------------
+## Post-Deployment
 
 ### Connecting to the Cluster
 
@@ -136,8 +130,7 @@ Manifests under [files/kubernetes/manifests/rbac](./files/kubernetes/manifests/r
 
 Additional values for some Helm charts have been stored under [files/kubernetes/helm/values](./files/kubernetes/helm/values) to provide some additional options for services to deploy to the cluster.
 
-Maintenance
------------
+## Maintenance
 
 As the cluster requires and has components managed by AKS, you will need to occasionally update secrets to ensure the cluster is still healthy. This can be managed with azcli.
 
