@@ -111,6 +111,12 @@ Certificates are handled by cert-manager to provide valid SSL certificates, whic
 
 Manifests under [files/kubernetes/manifests/cert-manager](./files/kubernetes/manifests/cert-manager) can be used as a guideline assuming DNS is set up for the endpoint.
 
+To update the certificate you can use the following snippet to convert a certificate's Issuer
+
+```bash
+kubectl patch certificate www.example.com-cert --type=merge --patch='{"spec":{"issuerRef":{"name":"letsencrypt-prod"}}}'
+```
+
 #### Rbac Roles
 
 Additional RBAC roles can be created for the cluster.
