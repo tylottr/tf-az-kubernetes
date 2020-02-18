@@ -2,6 +2,7 @@ rbac:
   create: true
 controller:
   replicaCount: 2
+  ingressClass: nginx
   config:
     enable-modsecurity: "true"
     enable-owasp-modsecurity-crs: "true"
