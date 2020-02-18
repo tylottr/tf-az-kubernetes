@@ -2,21 +2,16 @@ rbac:
   create: true
 controller:
   replicaCount: 2
-  metrics:
-    enabled: true
-    service:
-      annotations:
-        prometheus.io/scrape: "true"
   config:
     enable-modsecurity: "true"
     enable-owasp-modsecurity-crs: "true"
   resources:
-    limits:
-      cpu: 500m
-      memory: 768Mi
     requests:
       cpu: 250m
       memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
   affinity:
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
@@ -29,6 +24,11 @@ controller:
               - nginx-ingress
           topologyKey: kubernetes.io/hostname
         weight: 100
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
   autoscaling:
     enabled: true
     maxReplicas: 4
