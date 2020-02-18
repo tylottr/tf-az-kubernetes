@@ -63,74 +63,74 @@ variable "acr_admin_enabled" {
 
 ## AKS Cluster
 ### Azure-level
-variable "aks_cluster_kubernetes_version" {
+variable "aks_kubernetes_version" {
   description = "Version of Kubernetes to use in the cluster"
   type        = string
   default     = null
 }
 
-variable "enable_aad_rbac" {
+variable "enable_aks_aad_rbac" {
   description = "Flag used to enable AAD RBAC Integration"
   type        = bool
   default     = false
 }
 
-variable "cluster_aad_client_app_id" {
+variable "aks_aad_client_app_id" {
   description = "App ID of the client application used for AAD RBAC"
   type        = string
   default     = null
 }
 
-variable "cluster_aad_server_app_id" {
+variable "aks_aad_server_app_id" {
   description = "App ID of the server application used for AAD RBAC"
   type        = string
   default     = null
 }
 
-variable "cluster_aad_server_app_secret" {
+variable "aks_aad_server_app_secret" {
   description = "App Secret of the server application used for AAD RBAC"
   type        = string
   default     = null
 }
 
-variable "aks_cluster_node_vm_admin" {
+variable "aks_node_vm_admin" {
   description = "Username for the node VM administrator"
   type        = string
   default     = "vmadmin"
 }
 
-variable "aks_cluster_node_min_count" {
+variable "aks_node_min_count" {
   description = "Minimum number of nodes in the AKS cluster"
   type        = number
   default     = 1
 }
 
-variable "aks_cluster_node_max_count" {
+variable "aks_node_max_count" {
   description = "Maximum number of nodes in the AKS cluster"
   type        = number
   default     = 5
 }
 
-variable "aks_cluster_node_size" {
+variable "aks_node_size" {
   description = "Size of nodes in the AKS cluster"
   type        = string
   default     = "Standard_B2ms"
 }
 
-variable "aks_cluster_node_disk_size" {
+variable "aks_node_disk_size" {
   description = "Disk size of nodes in the AKS cluster (Minimum 30)"
   type        = number
   default     = 64
 }
 
 ### K8s-level
-variable "aks_cluster_nginx_ingress_chart_version" {
+variable "aks_nginx_ingress_chart_version" {
   description = "The chart version for the nginx-ingress Helm chart"
   type        = string
   default     = "1.29.2"
 }
 
-variable "aks_cluster_cert_manager_chart_version" {
+variable "aks_cert_manager_chart_version" {
   description = "The chart version for the cert-manager Helm chart"
   type        = string
   default     = "v0.13.0"

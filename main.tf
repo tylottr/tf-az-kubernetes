@@ -129,7 +129,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     client_secret = azuread_application_password.main_aks.value
   }
 
-  kubernetes_version = var.aks_cluster_kubernetes_version
+  kubernetes_version = var.aks_kubernetes_version
 
   dns_prefix          = "${local.resource_prefix}-aks"
   node_resource_group = "${local.resource_prefix}-aks-node-rg"
@@ -147,13 +147,13 @@ resource "azurerm_kubernetes_cluster" "main" {
        * AAD integration.
        **
       */
-      for_each = var.enable_aad_rbac ? [true] : []
+      for_each = var.enable_aks_aad_rbac ? [true] : []
 
       content {
         tenant_id         = data.azurerm_client_config.current.tenant_id
-        client_app_id     = var.cluster_aad_client_app_id
-        server_app_id     = var.cluster_aad_server_app_id
-        server_app_secret = var.cluster_aad_server_app_secret
+        client_app_id     = var.aks_aad_client_app_id
+        server_app_id     = var.aks_aad_server_app_id
+        server_app_secret = var.aks_aad_server_app_secret
       }
     }
   }
@@ -171,7 +171,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   linux_profile {
-    admin_username = var.aks_cluster_node_vm_admin
+    admin_username = var.aks_node_vm_admin
     ssh_key {
       key_data = tls_private_key.main.public_key_openssh
     }
@@ -183,11 +183,11 @@ resource "azurerm_kubernetes_cluster" "main" {
     enable_auto_scaling   = true
     enable_node_public_ip = false
 
-    vm_size         = var.aks_cluster_node_size
-    os_disk_size_gb = var.aks_cluster_node_disk_size
-    node_count      = var.aks_cluster_node_min_count
-    min_count       = var.aks_cluster_node_min_count
-    max_count       = var.aks_cluster_node_max_count
+    vm_size         = var.aks_node_size
+    os_disk_size_gb = var.aks_node_disk_size
+    node_count      = var.aks_node_min_count
+    min_count       = var.aks_node_min_count
+    max_count       = var.aks_node_max_count
 
     vnet_subnet_id = null
   }
@@ -213,7 +213,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
 locals {
   main_aks_config = "${
-    var.enable_aad_rbac
+    var.enable_aks_aad_rbac
     ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
     : azurerm_kubernetes_cluster.main.kube_config_raw
   }"
@@ -285,7 +285,7 @@ resource "helm_release" "main_ingress" {
 
   repository = data.helm_repository.stable.metadata[0].name
   chart      = "nginx-ingress"
-  version    = var.aks_cluster_nginx_ingress_chart_version
+  version    = var.aks_nginx_ingress_chart_version
   namespace  = "kube-system"
 
   values = [templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.tpl.yaml", {})]
@@ -300,7 +300,7 @@ resource "helm_release" "main_cert_manager" {
 
   repository = data.helm_repository.jetstack.metadata[0].name
   chart      = "cert-manager"
-  version    = var.aks_cluster_cert_manager_chart_version
+  version    = var.aks_cert_manager_chart_version
   namespace  = "kube-system"
 
   values = [templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.tpl.yaml", {})]
