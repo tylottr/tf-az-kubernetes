@@ -328,9 +328,11 @@ resource "helm_release" "main_cert_manager" {
   wait = false
 
   provisioner "local-exec" {
-    command = <<EOF
-kubectl apply --kubeconfig ${local_file.main_aks_config.filename} -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.13/deploy/manifests/00-crds.yaml --validate=false
-EOF
+    command = "kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.13/deploy/manifests/00-crds.yaml --validate=false"
+
+    environment = {
+      KUBECONFIG = local_file.main_aks_config.filename
+    }
   }
 
   depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
