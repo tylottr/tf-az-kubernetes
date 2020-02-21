@@ -102,7 +102,8 @@ resource "azurerm_log_analytics_workspace" "main" {
   location            = azurerm_resource_group.main.location
   tags                = local.tags
 
-  sku = "PerGB2018"
+  sku               = "PerGB2018"
+  retention_in_days = 30
 }
 
 resource "azurerm_role_assignment" "main_oms_readers" {
@@ -236,6 +237,29 @@ resource "azurerm_role_assignment" "main_aks_users" {
   scope                = azurerm_kubernetes_cluster.main.id
   role_definition_name = "Azure Kubernetes Service Cluster User Role"
   principal_id         = azuread_group.main[each.key].id
+}
+
+data "azurerm_monitor_diagnostic_categories" "main_aks" {
+  resource_id = azurerm_kubernetes_cluster.main.id
+}
+
+resource "azurerm_monitor_diagnostic_setting" "main_aks" {
+  name                       = local.resource_prefix
+  target_resource_id         = azurerm_kubernetes_cluster.main.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+
+  dynamic log {
+    for_each = data.azurerm_monitor_diagnostic_categories.main_aks.logs
+
+    content {
+      category = log.value
+
+      retention_policy {
+        enabled = true
+        days    = 7
+      }
+    }
+  }
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
