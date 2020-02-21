@@ -6,10 +6,6 @@ resource "random_integer" "entropy" {
   max = 99
 }
 
-locals {
-  resource_prefix = var.resource_prefix
-}
-
 resource "tls_private_key" "main" {
   algorithm = "RSA"
 }
@@ -42,13 +38,13 @@ locals {
 resource "azuread_group" "main" {
   for_each = local.aad_groups
 
-  name = "${local.resource_prefix}-aks ${each.key}"
+  name = "${local.resource_prefix} ${each.key}"
 }
 
 ## Azure Kubernetes
 ### Azure AD Service Principal for Kubernetes
 resource "azuread_application" "main_aks" {
-  name = "${local.resource_prefix}-aks"
+  name = local.resource_prefix
 }
 
 resource "random_password" "main_aks" {
@@ -73,7 +69,7 @@ data "azuread_service_principal" "main_aks" {
 
 ## Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "${local.resource_prefix}-aks-rg"
+  name     = "${local.resource_prefix}-rg"
   location = var.location
   tags     = local.tags
 }
@@ -101,7 +97,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
 ## Monitoring
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${local.resource_prefix}-aks-oms"
+  name                = "${local.resource_prefix}-oms"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -119,7 +115,7 @@ resource "azurerm_role_assignment" "main_oms_readers" {
 
 ## Kubernetes Compute (Azure-level)
 resource "azurerm_kubernetes_cluster" "main" {
-  name                = "${local.resource_prefix}-aks"
+  name                = local.resource_prefix
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -131,8 +127,8 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   kubernetes_version = var.aks_kubernetes_version
 
-  dns_prefix          = "${local.resource_prefix}-aks"
-  node_resource_group = "${local.resource_prefix}-aks-node-rg"
+  dns_prefix          = local.resource_prefix
+  node_resource_group = "${local.resource_prefix}-node-rg"
 
   api_server_authorized_ip_ranges = ["0.0.0.0/0"]
 

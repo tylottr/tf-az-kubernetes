@@ -99,18 +99,6 @@ variable "aks_node_vm_admin" {
   default     = "vmadmin"
 }
 
-variable "aks_node_min_count" {
-  description = "Minimum number of nodes in the AKS cluster"
-  type        = number
-  default     = 1
-}
-
-variable "aks_node_max_count" {
-  description = "Maximum number of nodes in the AKS cluster"
-  type        = number
-  default     = 5
-}
-
 variable "aks_node_size" {
   description = "Size of nodes in the AKS cluster"
   type        = string
@@ -121,6 +109,18 @@ variable "aks_node_disk_size" {
   description = "Disk size of nodes in the AKS cluster (Minimum 30)"
   type        = number
   default     = 64
+}
+
+variable "aks_node_min_count" {
+  description = "Minimum number of nodes in the AKS cluster"
+  type        = number
+  default     = 1
+}
+
+variable "aks_node_max_count" {
+  description = "Maximum number of nodes in the AKS cluster"
+  type        = number
+  default     = 5
 }
 
 ### K8s-level
@@ -138,6 +138,8 @@ variable "aks_cert_manager_chart_version" {
 
 # Locals
 locals {
+  resource_prefix = "${var.resource_prefix}-aks"
+
   tags = merge(
     var.tags,
     {
