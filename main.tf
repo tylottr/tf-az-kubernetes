@@ -1,11 +1,6 @@
 # Data
 data "azurerm_client_config" "current" {}
 
-resource "random_integer" "entropy" {
-  min = 0
-  max = 99
-}
-
 resource "tls_private_key" "main" {
   algorithm = "RSA"
 }
