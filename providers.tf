@@ -5,7 +5,9 @@ terraform {
 
 # Providers
 provider "azurerm" {
-  version = "~> 1.42.0"
+  version = "~> 2.0.0"
+
+  features {}
 
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
