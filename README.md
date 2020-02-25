@@ -54,7 +54,6 @@ These are the variables used along with their defaults. For any without a value 
 |aks_aad_client_app_id|App ID of the client application used for AAD RBAC|null|
 |aks_aad_server_app_id|App ID of the server application used for AAD RBAC|null|
 |aks_aad_server_app_secret|App Secret of the server application used for AAD RBAC|null|
-|aks_node_vm_admin|Username for the node VM administrator|vmadmin|
 |aks_node_size|Size of nodes in the AKS cluster|Standard_B2ms|
 |aks_node_disk_size|Disk size of nodes in the AKS cluster (Minimum 30)|64|
 |aks_node_min_count|Minimum number of nodes in the AKS cluster|1|

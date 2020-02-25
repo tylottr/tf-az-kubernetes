@@ -93,12 +93,6 @@ variable "aks_aad_server_app_secret" {
   default     = null
 }
 
-variable "aks_node_vm_admin" {
-  description = "Username for the node VM administrator"
-  type        = string
-  default     = "vmadmin"
-}
-
 variable "aks_node_size" {
   description = "Size of nodes in the AKS cluster"
   type        = string
@@ -146,4 +140,6 @@ locals {
       deployedBy = "Terraform"
     }
   )
+
+  vm_admin_username = "vmadmin"
 }

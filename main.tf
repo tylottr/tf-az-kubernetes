@@ -168,7 +168,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   linux_profile {
-    admin_username = var.aks_node_vm_admin
+    admin_username = local.vm_admin_username
     ssh_key {
       key_data = tls_private_key.main.public_key_openssh
     }
