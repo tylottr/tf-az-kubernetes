@@ -92,7 +92,9 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
 ## Monitoring
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "${local.resource_prefix}-oms"
+  count = var.enable_aks_la_monitoring ? 1 : 0
+
+  name                = "${local.resource_prefix}-la"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -102,9 +104,9 @@ resource "azurerm_log_analytics_workspace" "main" {
 }
 
 resource "azurerm_role_assignment" "main_oms_readers" {
-  for_each = local.aad_kubernetes_groups
+  for_each = var.enable_aks_la_monitoring ? local.aad_kubernetes_groups : {}
 
-  scope                = azurerm_log_analytics_workspace.main.id
+  scope                = azurerm_log_analytics_workspace.main[0].id
   role_definition_name = "Reader"
   principal_id         = azuread_group.main[each.key].id
 }
@@ -190,8 +192,8 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
 
     oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+      enabled = var.enable_aks_la_monitoring
+      log_analytics_workspace_id = var.enable_aks_la_monitoring ? azurerm_log_analytics_workspace.main[0].id : null
     }
   }
 
@@ -239,9 +241,11 @@ data "azurerm_monitor_diagnostic_categories" "main_aks" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "main_aks" {
+  count = var.enable_aks_la_monitoring ? 1 : 0
+
   name                       = local.resource_prefix
   target_resource_id         = azurerm_kubernetes_cluster.main.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main[0].id
 
   dynamic log {
     for_each = data.azurerm_monitor_diagnostic_categories.main_aks.logs

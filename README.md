@@ -46,10 +46,11 @@ These are the variables used along with their defaults. For any without a value 
 |location|The location of this deployment|UK South|
 |resource_prefix|A prefix for the name of the resource, used to generate the resource names|kubernetes|
 |tags|Tags given to the resources created by this template|{}|
-|enable_acr|Flag used to enable ACR|true|
+|enable_acr|Flag used to enable ACR|false|
 |acr_sku|SKU of the ACR|Basic|
-|acr_admin_enabled|Flag used to enable ACR Admin|true|
+|acr_admin_enabled|Flag used to enable ACR Admin|false|
 |aks_kubernetes_version|Version of Kubernetes to use in the cluster|null|
+|enable_aks_la_monitoring||Flag used to enable Log Analytics|false|
 |enable_aks_aad_rbac|Flag used to enable AAD RBAC integration|false|
 |aks_aad_client_app_id|App ID of the client application used for AAD RBAC|null|
 |aks_aad_server_app_id|App ID of the server application used for AAD RBAC|null|

@@ -46,7 +46,7 @@ variable "tags" {
 variable "enable_acr" {
   description = "Flag used to enable ACR"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "acr_sku" {
@@ -58,7 +58,7 @@ variable "acr_sku" {
 variable "acr_admin_enabled" {
   description = "Flag used to enable ACR Admin"
   type        = bool
-  default     = true
+  default     = false
 }
 
 ## AKS Cluster
@@ -67,6 +67,12 @@ variable "aks_kubernetes_version" {
   description = "Version of Kubernetes to use in the cluster"
   type        = string
   default     = null
+}
+
+variable "enable_aks_la_monitoring" {
+  description = "Flag used to enable Log Analytics"
+  type        = string
+  default     = false
 }
 
 variable "enable_aks_aad_rbac" {
