@@ -153,3 +153,7 @@ az aks update-credentials --name=<replace with aks cluster name> --resource-grou
     --aad-server-app-id=<replace with cluster aad server app id> \
     --aad-server-app-secret=<replace with cluster aad server app secret> \
 ```
+
+## Issues
+
+* When creating the Service Principal through Terraform, there is a chance that its details not have propagated by the time the Kubernetes Cluster is being created. If this occurs just run `terraform apply` again.
