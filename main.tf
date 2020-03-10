@@ -1,6 +1,4 @@
 # Data
-data "azurerm_client_config" "current" {}
-
 resource "tls_private_key" "main" {
   algorithm = "RSA"
 }
@@ -55,11 +53,12 @@ resource "azuread_application_password" "main_aks" {
 resource "azuread_service_principal" "main_aks" {
   application_id               = azuread_application.main_aks.application_id
   app_role_assignment_required = false
-}
 
-data "azuread_service_principal" "main_aks" {
-  // This data source is used here to ensure we can optionally provide our own AAD Application as opposed to the Terraform-managed one in future.
-  application_id = azuread_service_principal.main_aks.application_id
+  provisioner "local-exec" {
+    // Sleep for 45 seconds to allow the service principal to propagate fully.
+    command    = "sleep 45"
+    on_failure = continue
+  }
 }
 
 ## Resource Group
@@ -87,7 +86,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
-  principal_id         = data.azuread_service_principal.main_aks.id
+  principal_id         = azuread_service_principal.main_aks.id
 }
 
 ## Monitoring
@@ -127,7 +126,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   tags                = local.tags
 
   service_principal {
-    client_id     = data.azuread_service_principal.main_aks.application_id
+    client_id     = azuread_service_principal.main_aks.application_id
     client_secret = azuread_application_password.main_aks.value
   }
 
@@ -152,7 +151,6 @@ resource "azurerm_kubernetes_cluster" "main" {
       for_each = var.enable_aks_aad_rbac ? [true] : []
 
       content {
-        tenant_id         = data.azurerm_client_config.current.tenant_id
         client_app_id     = var.aks_aad_client_app_id
         server_app_id     = var.aks_aad_server_app_id
         server_app_secret = var.aks_aad_server_app_secret

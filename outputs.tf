@@ -5,8 +5,8 @@ output "aks_cluster" {
     resource_group      = azurerm_kubernetes_cluster.main.resource_group_name
     node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
 
-    service_principal_application_id = data.azuread_service_principal.main_aks.application_id
-    service_principal_object_id      = data.azuread_service_principal.main_aks.object_id
+    service_principal_application_id = azuread_service_principal.main_aks.application_id
+    service_principal_object_id      = azuread_service_principal.main_aks.object_id
   }
 }
 
