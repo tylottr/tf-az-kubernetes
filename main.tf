@@ -112,6 +112,14 @@ resource "azurerm_role_assignment" "main_oms_readers" {
 }
 
 ## Kubernetes Compute (Azure-level)
+resource "azurerm_role_assignment" "main_aks_network_contributor" {
+  count = var.enable_aks_advanced_networking ? 1 : 0
+
+  scope                = var.aks_subnet_id
+  role_definition_name = "Network Contributor"
+  principal_id         = azuread_service_principal.main_aks.id
+}
+
 resource "azurerm_kubernetes_cluster" "main" {
   name                = local.resource_prefix
   resource_group_name = azurerm_resource_group.main.name
@@ -153,15 +161,15 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 
   network_profile {
-    network_plugin    = "kubenet"
+    network_plugin    = var.enable_aks_advanced_networking ? "azure" : "kubenet"
     load_balancer_sku = "Standard"
 
-    pod_cidr = "10.244.0.0/16"
+    pod_cidr = var.enable_aks_advanced_networking ? null : "10.244.0.0/16"
 
-    network_policy     = "calico"
+    network_policy     = var.enable_aks_calico ? "calico" : var.enable_aks_advanced_networking ? "azure" : null
     docker_bridge_cidr = "172.17.0.1/16"
-    service_cidr       = "10.0.0.0/16"
-    dns_service_ip     = "10.0.0.10"
+    service_cidr       = var.aks_service_cidr
+    dns_service_ip     = cidrhost(var.aks_service_cidr, 10)
   }
 
   linux_profile {
@@ -183,7 +191,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     min_count       = var.aks_node_min_count
     max_count       = var.aks_node_max_count
 
-    vnet_subnet_id = null
+    vnet_subnet_id = var.enable_aks_advanced_networking ? var.aks_subnet_id : null
   }
 
   addon_profile {

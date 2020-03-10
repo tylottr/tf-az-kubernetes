@@ -99,6 +99,30 @@ variable "aks_aad_server_app_secret" {
   default     = null
 }
 
+variable "enable_aks_calico" {
+  description = "Flag used to enable Calico CNI (Ignored if enable_aks_advanced_networking is true)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_aks_advanced_networking" {
+  description = "Flag used to enable Azure CNI"
+  type        = bool
+  default     = false
+}
+
+variable "aks_subnet_id" {
+  description = "Subnet ID for Azure CNI (Ignored if enable_aks_advanced_networking is false)"
+  type        = string
+  default     = null
+}
+
+variable "aks_service_cidr" {
+  description = "Service CIDR for AKS"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
 variable "aks_node_size" {
   description = "Size of nodes in the AKS cluster"
   type        = string
