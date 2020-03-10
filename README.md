@@ -152,10 +152,9 @@ To update the AAD Service Principal, run the following command
 ```bash
 az aks update-credentials --name=<replace with aks cluster name> --resource-group=<replace with aks cluster resource group> \
     --reset-aad \
-    --aad-tenant-id=<replace with cluster aad tenant id> \
     --aad-client-app-id=<replace with cluster aad client app id> \
     --aad-server-app-id=<replace with cluster aad server app id> \
-    --aad-server-app-secret=<replace with cluster aad server app secret> \
+    --aad-server-app-secret=<replace with cluster aad server app secret>
 ```
 
 ## Issues
