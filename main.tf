@@ -192,7 +192,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
 
     oms_agent {
-      enabled = var.enable_aks_la_monitoring
+      enabled                    = var.enable_aks_la_monitoring
       log_analytics_workspace_id = var.enable_aks_la_monitoring ? azurerm_log_analytics_workspace.main[0].id : null
     }
   }
