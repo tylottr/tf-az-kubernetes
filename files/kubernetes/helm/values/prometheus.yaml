@@ -1,40 +1,30 @@
 # repo: helm repo add stable https://kubernetes-charts.storage.googleapis.com
-# helm2: helm install --name prometheus stable/prometheus --version 9.3.1 --namespace monitoring --values ./prometheus.yaml
-# helm3: helm install prometheus stable/prometheus --version 9.3.1 --namespace monitoring --values ./prometheus.yaml
+# helm2: helm install --name prometheus stable/prometheus --version 11.0.2 --namespace monitoring --values ./prometheus.yaml
+# helm3: helm install prometheus stable/prometheus --version 11.0.2 --namespace monitoring --values ./prometheus.yaml
+rbac:
+  create: true
+
 podSecurityPolicy:
   enabled: true
 
 server:
   replicaCount: 1
+  statefulSet:
+    enabled: true
+
   resources:
     requests:
       cpu: 100m
-      memory: 512Mi
-    limits:
-      cpu: 200m
       memory: 1Gi
-  statefulSet:
-    enabled: false
+    limits:
+      cpu: 250m
+      memory: 2Gi
+
   persistentVolume:
     enabled: true
     storageClass: azure-file-standard-lrs
-  retention: "15d"
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - prometheus
-            - key: component
-              operator: In
-              values:
-              - server
-          topologyKey: kubernetes.io/hostname
-        weight: 100
+
+  retention: "7d"
 
 nodeExporter:
   resources:

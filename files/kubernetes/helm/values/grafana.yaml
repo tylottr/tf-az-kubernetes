@@ -1,26 +1,13 @@
 # repo: helm repo add stable https://kubernetes-charts.storage.googleapis.com
-# helm2: helm install --name grafana stable/grafana --version 3.11.0 --namespace monitoring --values ./grafana.yaml
-# helm3: helm install grafana stable/grafana --version 3.11.0 --namespace monitoring --values ./grafana.yaml
+# helm2: helm install --name grafana stable/grafana --version 5.0.5 --namespace monitoring --values ./grafana.yaml
+# helm3: helm install grafana stable/grafana --version 5.0.5 --namespace monitoring --values ./grafana.yaml
 replicas: 1
 persistence:
-  enabled: true
-  type: pvc
-  storageClassName: azure-disk-standard
-affinity:
-  podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - podAffinityTerm:
-        labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - grafana
-        topologyKey: kubernetes.io/hostname
-      weight: 100
+  enabled: false
 
 plugins:
 - grafana-simple-json-datasource
+
 datasources:
   datasources.yaml:
     apiversion: 1
@@ -34,6 +21,7 @@ datasources:
         type: loki
         access: proxy
         url: http://loki:3100
+
 dashboardProviders:
   dashboardproviders.yaml:
     apiVersion: 1

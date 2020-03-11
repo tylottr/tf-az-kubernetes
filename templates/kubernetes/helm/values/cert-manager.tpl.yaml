@@ -8,22 +8,25 @@ resources:
     cpu: 10m
     memory: 64Mi
   limits:
-    cpu: 20m
+    cpu: 100m
     memory: 128Mi
 
 webhook:
   enabled: true
   replicaCount: 1
+
   resources:
     requests:
-      cpu: 25m
+      cpu: 10m
       memory: 32Mi
     limits:
       cpu: 50m
       memory: 64Mi
 
 cainjector:
+  enabled: true
   replicaCount: 1
+
   resources:
     requests:
       cpu: 10m

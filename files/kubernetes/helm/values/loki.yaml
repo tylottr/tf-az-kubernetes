@@ -1,20 +1,29 @@
 # helm repo add loki https://grafana.github.io/loki/charts
-# helm2: helm install --name loki loki/loki-stack --version 0.17.1 --namespace monitoring --values ./loki.yaml
-# helm3: helm install loki loki/loki-stack --version 0.17.1 --namespace monitoring --values ./loki.yaml
+# helm2: helm install --name loki loki/loki-stack --version 0.32.1 --namespace monitoring --values ./loki.yaml
+# helm3: helm install loki loki/loki-stack --version 0.32.1 --namespace monitoring --values ./loki.yaml
 loki:
+  enabled: true
   replicas: 1
+
   persistence:
     enabled: true
     storageClassName: azure-file-standard-lrs
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In
-              values:
-              - loki
-          topologyKey: kubernetes.io/hostname
-        weight: 100
+
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+
+promtail:
+  enabled: true
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
