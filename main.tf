@@ -346,8 +346,10 @@ resource "kubernetes_storage_class" "main_azure_file" {
   for_each = {
     "azure-file-standard-lrs"   = "Standard_LRS"
     "azure-file-standard-grs"   = "Standard_GRS"
+    "azure-file-standard-zrs"   = "Standard_ZRS"
     "azure-file-standard-ragrs" = "Standard_RAGRS"
     "azure-file-premium-lrs"    = "Premium_LRS"
+    "azure-file-premium-zrs"    = "Premium_ZRS"
   }
 
   metadata {
