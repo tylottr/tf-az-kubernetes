@@ -70,9 +70,8 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "~> 0.10.0"
+  version = "~> 1.0.0"
 
-  service_account = kubernetes_service_account.main_helm_tiller.metadata[0].name
   kubernetes {
     config_path      = local.kubeconfig.config_path
     load_config_file = false

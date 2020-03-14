@@ -270,32 +270,6 @@ resource "azurerm_monitor_diagnostic_setting" "main_aks" {
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Helm
-### Helm setup
-resource "kubernetes_service_account" "main_helm_tiller" {
-  metadata {
-    name      = "tiller"
-    namespace = "kube-system"
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "main_helm_tiller" {
-  metadata {
-    name = "tiller"
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-
-  subject {
-    namespace = kubernetes_service_account.main_helm_tiller.metadata[0].namespace
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.main_helm_tiller.metadata[0].name
-  }
-}
-
 data "helm_repository" "stable" {
   name = "stable"
   url  = "https://kubernetes-charts.storage.googleapis.com"
@@ -318,8 +292,6 @@ resource "helm_release" "main_ingress" {
   values = [templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.tpl.yaml", {})]
 
   wait = false
-
-  depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
 resource "helm_release" "main_cert_manager" {
@@ -341,8 +313,6 @@ resource "helm_release" "main_cert_manager" {
       KUBECONFIG = local_file.main_aks_config.filename
     }
   }
-
-  depends_on = [kubernetes_cluster_role_binding.main_helm_tiller]
 }
 
 ## Kubernetes Compute Environment (Kubernetes-level) - Storage

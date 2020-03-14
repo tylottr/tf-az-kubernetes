@@ -12,7 +12,6 @@ The environment deployed contains the following resources:
   * A read-only cluster role binding for the Kubernetes dashboard
   * A read-only binding allowing OMS to use the clusterUser account necessary access
   * A cluster-admin and view cluster role binding to an AAD Group
-  * Tiller in the kube-system namespace set up for Helm
   * Helm releases have been configured so they are immediately available
     * stable/nginx-ingress
     * jetstack/cert-manager
