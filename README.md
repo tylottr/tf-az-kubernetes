@@ -73,6 +73,7 @@ This template will output the following information:
 |Output|Description|
 |-|-|
 |aks_cluster|Provides details of the AKS Cluster|
+|aks_cluster_groups|Provides details of the AAD groups used for accessing and managing the cluster|
 |container_registry|Provides details of the Container Registry|
 
 ## Deployment
@@ -99,10 +100,18 @@ In the event the deployment needs to be destroyed, you can run `terraform destro
 You can connect to your new cluster using two methods:
 
 1. Use the Kubeconfig file created under `.terraform/.kube/clusters` directory to get immediate access
-2. Run `az aks get-credentials --name=<replace with cluster name> --resource-group=<replace with cluster resource group>`
-    * If using RBAC integration, ensure you are also in the group (inherited or not) created as part of the Terraform run. These groups will be named `<cluster name> Kubernetes Cluster <role>`
+2. Run `az aks get-credentials --name <REPLACE_WITH_CLUSTER_NAME> --resource-group <REPLACE_WITH_CLUSTER_RESOURCE_GROUP>`
+    * If using AAD RBAC integration you must be in one of the created AD groups to properly authenticate.
 
-### Kubernetes
+### Adding users to AD Groups
+
+To add users to the AD groups you can either do this in-portal or through command-line. To do this with Azure CLI:
+
+1. Get the object ID of the needed group with `terraform output aks_cluster_groups`
+2. Add the user to the group with `az ad group member add --group <REPLACE_WITH_GROUP_OBJECT_ID> --member-id <REPLACE_WITH_GROUP_MEMBER_OBJECT_ID>`
+    * To get the current user's object ID you can run `az ad signed-in-user show --output tsv --query objectId`
+
+### Kubernetes Setup
 
 Following deployment there are some resources within the cluster that need to be deployed separate to the Terraform deployment. These steps will not be tracked by Terraform itself.
 
@@ -141,22 +150,18 @@ As the cluster requires and has components managed by AKS, you will need to occa
 To update the AKS Service Principal, run the following command
 
 ```bash
-az aks update-credentials --name=<replace with aks cluster name> --resource-group=<replace with aks cluster resource group> \
+az aks update-credentials --name <REPLACE_WITH_CLUSTER_NAME> --resource-group <REPLACE_WITH_CLUSTER_RESOURCE_GROUP> \
     --reset-service-principal \
-    --service-principal=<replace with cluster client id> \
-    --client-secret=<replace with cluster client secret>
+    --service-principal <REPLACE_WITH_CLUSTER_CLIENT_ID> \
+    --client-secret <REPLACE_WITH_CLUSTER_CLIENT_SECRET>
 ```
 
 To update the AAD Service Principal, run the following command
 
 ```bash
-az aks update-credentials --name=<replace with aks cluster name> --resource-group=<replace with aks cluster resource group> \
+az aks update-credentials --name <REPLACE_WITH_CLUSTER_NAME> --resource-group <REPLACE_WITH_CLUSTER_RESOURCE_GROUP> \
     --reset-aad \
-    --aad-client-app-id=<replace with cluster aad client app id> \
-    --aad-server-app-id=<replace with cluster aad server app id> \
-    --aad-server-app-secret=<replace with cluster aad server app secret>
+    --aad-client-app-id <REPLACE_WITH_CLUSTER_AAD_CLIENT_APP_ID> \
+    --aad-server-app-id <REPLACE_WITH_CLUSTER_AAD_SERVER_APP_ID> \
+    --aad-server-app-secret <REPLACE_WITH_CLUSTER_AAD_SERVER_APP_SECRET>
 ```
-
-## Issues
-
-* When creating the Service Principal through Terraform, there is a chance that its details not have propagated by the time the Kubernetes Cluster is being created. If this occurs just run `terraform apply` again.

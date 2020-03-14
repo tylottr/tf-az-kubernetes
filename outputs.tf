@@ -10,6 +10,17 @@ output "aks_cluster" {
   }
 }
 
+output "aks_cluster_groups" {
+  description = "Provides details of the AAD groups used for accessing and managing the AKS Cluster"
+  value = {
+    for group, role in local.aad_kubernetes_groups :
+    azuread_group.main[group].name => {
+      object_id       = azuread_group.main[group].object_id
+      kubernetes_role = role
+    }
+  }
+}
+
 output "container_registry" {
   description = "Provides details of the Container Registry"
   value = var.enable_acr ? {
