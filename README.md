@@ -63,7 +63,7 @@ These are the variables used along with their defaults. For any without a value 
 |aks_node_min_count|Minimum number of nodes in the AKS cluster|1|
 |aks_node_max_count|Maximum number of nodes in the AKS cluster|5|
 |aks_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|1.29.2|
-|aks_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.13.0|
+|aks_cert_manager_chart_version|The chart version for the cert-manager Helm chart|v0.13.1|
 
 ## Outputs
 

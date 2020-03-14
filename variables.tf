@@ -157,7 +157,7 @@ variable "aks_nginx_ingress_chart_version" {
 variable "aks_cert_manager_chart_version" {
   description = "The chart version for the cert-manager Helm chart"
   type        = string
-  default     = "v0.13.0"
+  default     = "v0.13.1"
 }
 
 # Locals
