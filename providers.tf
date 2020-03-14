@@ -57,7 +57,7 @@ locals {
 }
 
 provider "kubernetes" {
-  version = "~> 1.11.0"
+  version = "~> 1.11.1"
 
   config_path      = local.kubeconfig.config_path
   load_config_file = false
@@ -85,11 +85,7 @@ provider "helm" {
 }
 
 provider "random" {
-  version = "~> 2.2.0"
-}
-
-provider "null" {
-  version = "~> 2.1.0"
+  version = "~> 2.2.1"
 }
 
 provider "local" {
@@ -97,5 +93,5 @@ provider "local" {
 }
 
 provider "tls" {
-  version = "~> 2.1.0"
+  version = "~> 2.1.1"
 }
