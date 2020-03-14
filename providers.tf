@@ -57,7 +57,7 @@ locals {
 }
 
 provider "kubernetes" {
-  version = "~> 1.10.0"
+  version = "~> 1.11.0"
 
   config_path      = local.kubeconfig.config_path
   load_config_file = false
