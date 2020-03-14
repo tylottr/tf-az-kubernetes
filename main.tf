@@ -194,7 +194,8 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   addon_profile {
     kube_dashboard {
-      enabled = true
+      // Disabling to reduce default resource usage. If needed enable manually via Helm or Azure.
+      enabled = false
     }
 
     oms_agent {
@@ -208,7 +209,8 @@ resource "azurerm_kubernetes_cluster" "main" {
       default_node_pool,
       kubernetes_version,
       service_principal,
-      role_based_access_control
+      role_based_access_control,
+      addon_profile[0].kube_dashboard
     ]
   }
 }
@@ -370,25 +372,6 @@ resource "kubernetes_storage_class" "main_azure_file" {
 }
 
 ## Kubernetes RBAC
-### Dashboard
-resource "kubernetes_cluster_role_binding" "main_dashboard_view" {
-  metadata {
-    name = "kubernetes-dashboard"
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "view"
-  }
-
-  subject {
-    kind      = "ServiceAccount"
-    namespace = "kube-system"
-    name      = "kubernetes-dashboard"
-  }
-}
-
 ### OMS Integration (Only effective if AAD Integration is not enabled)
 resource "kubernetes_cluster_role" "main_oms_reader" {
   metadata {
