@@ -1,11 +1,11 @@
 # Config
 terraform {
-  required_version = ">= 0.12.18"
+  required_version = ">= 0.12.24"
 }
 
 # Providers
 provider "azurerm" {
-  version = "~> 2.0.0"
+  version = "~> 2.3.0"
 
   features {}
 
@@ -70,7 +70,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "~> 1.0.0"
+  version = "~> 1.1.1"
 
   kubernetes {
     config_path      = local.kubeconfig.config_path
