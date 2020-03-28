@@ -1,6 +1,7 @@
 output "aks_cluster" {
   description = "Provides details of the AKS Cluster"
   value = {
+    resource_id         = azurerm_kubernetes_cluster.main.id
     name                = azurerm_kubernetes_cluster.main.name
     resource_group      = azurerm_kubernetes_cluster.main.resource_group_name
     node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
