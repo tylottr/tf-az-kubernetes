@@ -91,7 +91,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
 ## Monitoring
 resource "azurerm_log_analytics_workspace" "main" {
-  count = var.enable_aks_la_monitoring ? 1 : 0
+  count = var.enable_aks_oms_monitoring ? 1 : 0
 
   name                = "${local.resource_prefix}-la"
   resource_group_name = azurerm_resource_group.main.name
@@ -103,7 +103,7 @@ resource "azurerm_log_analytics_workspace" "main" {
 }
 
 resource "azurerm_role_assignment" "main_oms_readers" {
-  for_each = var.enable_aks_la_monitoring ? local.aad_kubernetes_groups : {}
+  for_each = var.enable_aks_oms_monitoring ? local.aad_kubernetes_groups : {}
 
   scope                = azurerm_log_analytics_workspace.main[0].id
   role_definition_name = "Reader"
@@ -180,6 +180,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   default_node_pool {
     name                  = "default"
     type                  = "VirtualMachineScaleSets"
+    tags                  = local.tags
     enable_auto_scaling   = true
     enable_node_public_ip = false
 
@@ -199,9 +200,13 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
 
     oms_agent {
-      enabled                    = var.enable_aks_la_monitoring
-      log_analytics_workspace_id = var.enable_aks_la_monitoring ? azurerm_log_analytics_workspace.main[0].id : null
+      enabled                    = var.enable_aks_oms_monitoring
+      log_analytics_workspace_id = var.enable_aks_oms_monitoring ? azurerm_log_analytics_workspace.main[0].id : null
     }
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 
   lifecycle {
@@ -251,7 +256,7 @@ data "azurerm_monitor_diagnostic_categories" "main_aks" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "main_aks" {
-  count = var.enable_aks_la_monitoring ? 1 : 0
+  count = var.enable_aks_oms_monitoring ? 1 : 0
 
   name                       = local.resource_prefix
   target_resource_id         = azurerm_kubernetes_cluster.main.id
@@ -338,7 +343,8 @@ resource "kubernetes_storage_class" "main_azure_disk" {
   allow_volume_expansion = "true"
 
   parameters = {
-    kind               = "managed"
+    cachingmode        = "ReadOnly"
+    kind               = "Managed"
     storageaccounttype = each.value
   }
 }
@@ -367,7 +373,7 @@ resource "kubernetes_storage_class" "main_azure_file" {
   allow_volume_expansion = "true"
 
   parameters = {
-    skuname = each.value
+    skuName = each.value
   }
 }
 

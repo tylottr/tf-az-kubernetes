@@ -49,7 +49,7 @@ These are the variables used along with their defaults. For any without a value 
 |acr_sku|SKU of the ACR|Basic|
 |acr_admin_enabled|Flag used to enable ACR Admin|false|
 |aks_kubernetes_version|Version of Kubernetes to use in the cluster|null|
-|enable_aks_la_monitoring||Flag used to enable Log Analytics|false|
+|enable_aks_oms_monitoring||Flag used to enable Log Analytics|false|
 |enable_aks_aad_rbac|Flag used to enable AAD RBAC integration|false|
 |aks_aad_client_app_id|App ID of the client application used for AAD RBAC|null|
 |aks_aad_server_app_id|App ID of the server application used for AAD RBAC|null|

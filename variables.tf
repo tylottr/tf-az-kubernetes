@@ -69,7 +69,7 @@ variable "aks_kubernetes_version" {
   default     = null
 }
 
-variable "enable_aks_la_monitoring" {
+variable "enable_aks_oms_monitoring" {
   description = "Flag used to enable Log Analytics"
   type        = string
   default     = false

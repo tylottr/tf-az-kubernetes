@@ -7,6 +7,8 @@ output "aks_cluster" {
 
     service_principal_application_id = azuread_service_principal.main_aks.application_id
     service_principal_object_id      = azuread_service_principal.main_aks.object_id
+
+    managed_identity_id = azurerm_kubernetes_cluster.main.identity[0].principal_id
   }
 }
 
