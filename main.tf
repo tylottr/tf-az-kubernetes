@@ -151,6 +151,7 @@ resource "azurerm_kubernetes_cluster" "main" {
       for_each = var.enable_aks_aad_rbac ? [true] : []
 
       content {
+        tenant_id         = var.aks_aad_tenant_id
         client_app_id     = var.aks_aad_client_app_id
         server_app_id     = var.aks_aad_server_app_id
         server_app_secret = var.aks_aad_server_app_secret

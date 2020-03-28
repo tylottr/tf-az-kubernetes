@@ -81,6 +81,12 @@ variable "enable_aks_aad_rbac" {
   default     = false
 }
 
+variable "aks_aad_tenant_id" {
+  description = "Tenant ID used for AAD RBAC (defaults to current tenant)"
+  type        = string
+  default     = null
+}
+
 variable "aks_aad_client_app_id" {
   description = "App ID of the client application used for AAD RBAC"
   type        = string
