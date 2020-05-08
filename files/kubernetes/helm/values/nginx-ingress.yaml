@@ -1,3 +1,8 @@
+# Provision steps:
+#
+# helm repo add stable https://kubernetes-charts.storage.googleapis.com
+# helm install nginx stable/nginx --version 1.29.2 --namespace kube-system --values ./nginx.yaml
+
 rbac:
   create: true
 

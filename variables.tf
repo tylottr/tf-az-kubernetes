@@ -1,7 +1,6 @@
 ###################
 # Global Variables
 ###################
-
 variable "tenant_id" {
   description = "The tenant id of this deployment"
   type        = string
@@ -32,6 +31,12 @@ variable "location" {
   default     = "UK South"
 }
 
+variable "resource_group_name" {
+  description = "The name of an existing resource group - this will override the creation of a new resource group"
+  type        = string
+  default     = ""
+}
+
 variable "resource_prefix" {
   description = "A prefix for the name of the resource, used to generate the resource names"
   type        = string
@@ -46,7 +51,6 @@ variable "tags" {
 ##############################
 # Resource-Specific Variables
 ##############################
-
 # Azure Container Registry
 variable "enable_acr" {
   description = "Flag used to enable ACR"
@@ -58,6 +62,12 @@ variable "acr_sku" {
   description = "SKU of the ACR"
   type        = string
   default     = "Basic"
+}
+
+variable "acr_georeplication_locations" {
+  description = "Georeplication locations for ACR (Premium tier required)"
+  type        = list
+  default     = []
 }
 
 variable "enable_acr_admin" {
@@ -121,8 +131,20 @@ variable "enable_aks_advanced_networking" {
   default     = false
 }
 
-variable "aks_subnet_id" {
-  description = "Subnet ID for Azure CNI (Ignored if enable_aks_advanced_networking is false)"
+variable "aks_subnet_name" {
+  description = "Name of the subnet for Azure CNI (Ignored if enable_aks_advanced_networking is false)"
+  type        = string
+  default     = null
+}
+
+variable "aks_subnet_vnet_name" {
+  description = "Name of the aks_subnet_name's VNet for Azure CNI (Ignored if enable_aks_advanced_networking is false)"
+  type        = string
+  default     = null
+}
+
+variable "aks_subnet_vnet_resource_group_name" {
+  description = "Name of the resource group for aks_subnet_vnet_name for Azure CNI (Ignored if enable_aks_advanced_networking is false)"
   type        = string
   default     = null
 }
@@ -142,7 +164,7 @@ variable "aks_node_size" {
 variable "aks_node_disk_size" {
   description = "Disk size of nodes in the AKS cluster (Minimum 30)"
   type        = number
-  default     = 64
+  default     = 127
 }
 
 variable "aks_node_min_count" {
@@ -158,10 +180,22 @@ variable "aks_node_max_count" {
 }
 
 # AKS Cluster - Cluster Level
+variable "aks_nginx_ingress_values_file" {
+  description = "Path to a custom values file used to deploy Nginx Ingress"
+  type        = string
+  default     = ""
+}
+
 variable "aks_nginx_ingress_chart_version" {
   description = "The chart version for the nginx-ingress Helm chart"
   type        = string
   default     = "1.29.2"
+}
+
+variable "aks_cert_manager_values_file" {
+  description = "Path to a custom values file used to deploy Cert Manager"
+  type        = string
+  default     = ""
 }
 
 variable "aks_cert_manager_chart_version" {

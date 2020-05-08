@@ -2,31 +2,36 @@
 # RBAC
 #######
 locals {
-    aad_kubernetes_groups = var.enable_aks_aad_rbac ? {
-        // Pair is { <group name> = <cluster role> }
-        "Kubernetes Cluster Admins"  = "cluster-admin"
-        "Kubernetes Cluster Viewers" = "view"
-    } : {}
+  aad_kubernetes_groups = var.enable_aks_aad_rbac ? {
+    // Pair is { <group name> = <cluster role> }
+    "Kubernetes Cluster Admins"  = "cluster-admin"
+    "Kubernetes Cluster Viewers" = "view"
+  } : {}
 
-    aad_groups = merge(
-        local.aad_kubernetes_groups
-    )
+  aad_groups = merge(
+    local.aad_kubernetes_groups
+  )
 }
 
 resource "azuread_group" "main" {
   for_each = local.aad_groups
-  
+
   name = "${local.resource_prefix} ${each.key}"
 }
 
 #################
 # Resource Group
 #################
-// TODO: Make it possible to bring your own group. Note that this must be updated on all other resources.
 resource "azurerm_resource_group" "main" {
+  count = var.resource_group_name == "" ? 1 : 0
+
   name     = "${local.resource_prefix}-rg"
   location = var.location
   tags     = local.tags
+}
+
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name == "" ? azurerm_resource_group.main[0].name : var.resource_group_name
 }
 
 #####################
@@ -36,11 +41,13 @@ resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
   name                = lower(replace("${local.resource_prefix}acr", "/[-_]/", ""))
-  resource_group_name = azurerm_resource_group.main.name
+  resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
   tags                = local.tags
 
-  sku           = var.acr_sku
+  sku                      = var.acr_sku
+  georeplication_locations = length(var.acr_georeplication_locations) < 1 ? null : var.acr_georeplication_locations
+
   admin_enabled = var.enable_acr_admin
 }
 
@@ -60,7 +67,7 @@ resource "azurerm_log_analytics_workspace" "main" {
   count = var.enable_aks_oms_monitoring ? 1 : 0
 
   name                = "${local.resource_prefix}-oms"
-  resource_group_name = azurerm_resource_group.main.name
+  resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
   tags                = local.tags
 
@@ -79,17 +86,25 @@ resource "azurerm_role_assignment" "main_oms_readers" {
 ###################################
 # Kubernetes Cluster - Azure Level
 ###################################
+data "azurerm_subnet" "main" {
+  count = var.enable_aks_advanced_networking ? 1 : 0
+
+  name                 = var.aks_subnet_name
+  virtual_network_name = var.aks_subnet_vnet_name
+  resource_group_name  = var.aks_subnet_vnet_resource_group_name
+}
+
 resource "azurerm_role_assignment" "main_aks_network_contributor" {
   count = var.enable_aks_advanced_networking ? 1 : 0
 
-  scope                = var.aks_subnet_id
+  scope                = data.azurerm_subnet.main[0].id
   role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
 
 resource "azurerm_kubernetes_cluster" "main" {
   name                = local.resource_prefix
-  resource_group_name = azurerm_resource_group.main.name
+  resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
   tags                = local.tags
 
@@ -151,7 +166,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     min_count       = var.aks_node_min_count
     max_count       = var.aks_node_max_count
 
-    vnet_subnet_id = var.enable_aks_advanced_networking ? var.aks_subnet_id : null
+    vnet_subnet_id = var.enable_aks_advanced_networking ? data.azurerm_subnet.main[0].id : null
   }
 
   addon_profile {
@@ -182,6 +197,7 @@ locals {
 }
 
 resource "local_file" "main_aks_config" {
+  // Required for initialising the cert-manager
   filename        = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
   file_permission = "0600"
 
@@ -211,15 +227,32 @@ data "azurerm_monitor_diagnostic_categories" "main_aks" {
 resource "azurerm_monitor_diagnostic_setting" "main_aks" {
   count = var.enable_aks_oms_monitoring ? 1 : 0
 
-  name                       = local.resource_prefix
+  name                       = "${local.resource_prefix}-diag"
   target_resource_id         = azurerm_kubernetes_cluster.main.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main[0].id
 
   dynamic log {
     for_each = data.azurerm_monitor_diagnostic_categories.main_aks.logs
+    iterator = log_category
 
     content {
-      category = log.value
+      category = log_category.value
+      enabled  = true
+
+      retention_policy {
+        enabled = true
+        days    = 7
+      }
+    }
+  }
+
+  dynamic metric {
+    for_each = data.azurerm_monitor_diagnostic_categories.main_aks.metrics
+    iterator = metric_category
+
+    content {
+      category = metric_category.value
+      enabled  = true
 
       retention_policy {
         enabled = true
@@ -356,7 +389,7 @@ resource "helm_release" "main_ingress" {
   version    = var.aks_nginx_ingress_chart_version
   namespace  = "kube-system"
 
-  values = [file("${path.module}/files/kubernetes/helm/values/nginx-ingress.yaml")]
+  values = var.aks_nginx_ingress_values_file == "" ? [file("${path.module}/files/kubernetes/helm/values/nginx-ingress.yaml")] : [file(var.aks_nginx_ingress_values_file)]
 
   wait = false
 }
@@ -369,7 +402,7 @@ resource "helm_release" "main_cert_manager" {
   version    = var.aks_cert_manager_chart_version
   namespace  = "kube-system"
 
-  values = [file("${path.module}/files/kubernetes/helm/values/cert-manager.yaml")]
+  values = var.aks_cert_manager_values_file == "" ? [file("${path.module}/files/kubernetes/helm/values/cert-manager.yaml")] : [file(var.aks_cert_manager_values_file)]
 
   wait = false
 

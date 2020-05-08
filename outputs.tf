@@ -6,8 +6,7 @@ output "aks_cluster" {
     resource_group      = azurerm_kubernetes_cluster.main.resource_group_name
     node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
 
-    service_principal_application_id = azurerm_kubernetes_cluster.main.kubelet_identity[0].client_id
-    service_principal_object_id      = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+    managed_object_id = azurerm_kubernetes_cluster.main.identity[0].principal_id
   }
 }
 
@@ -15,7 +14,8 @@ output "aks_cluster_groups" {
   description = "Provides details of the AAD groups used for accessing and managing the AKS Cluster"
   value = {
     for group, role in local.aad_kubernetes_groups :
-    azuread_group.main[group].name => {
+    role => {
+      name            = azuread_group.main[group].name
       object_id       = azuread_group.main[group].object_id
       kubernetes_role = role
     }
