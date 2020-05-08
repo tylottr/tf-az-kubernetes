@@ -56,9 +56,9 @@ These are the variables used along with their defaults. For any without a value 
 |aks_aad_server_app_secret|App Secret of the server application used for AAD RBAC|`null`|
 |enable_aks_calico|Flag used to enable Calico CNI (Ignored if enable_aks_advanced_networking is true)|`false`|
 |enable_aks_advanced_networking|Flag used to enable Azure CNI|`false`|
-|aks_subnet_name|Name of the subnet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`
-|aks_subnet_vnet_name|Name of the aks_subnet_name's VNet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`
-|aks_subnet_vnet_resource_group_name|Name of the resource group for aks_subnet_vnet_name for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`
+|aks_subnet_name|Name of the subnet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
+|aks_subnet_vnet_name|Name of the aks_subnet_name's VNet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
+|aks_subnet_vnet_resource_group_name|Name of the resource group for aks_subnet_vnet_name for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
 |aks_service_cidr|Service CIDR for AKS|`"10.0.0.0/16"`|
 |aks_node_size|Size of nodes in the AKS cluster|`"Standard_B2ms"`|
 |aks_node_disk_size|Disk size of nodes in the AKS cluster (Minimum 30)|`127`|
