@@ -81,7 +81,3 @@ provider "helm" {
     client_key         = local.kubeconfig.client_key
   }
 }
-
-provider "local" {
-  version = "~> 1.4.0"
-}
