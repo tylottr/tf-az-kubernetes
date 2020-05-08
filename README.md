@@ -26,8 +26,6 @@ In Azure, you also need:
 
 These are the variables used along with their defaults. For any without a value in default, the value must be filled in unless otherwise sateted otherwise the deployment will encounter failures.
 
-> TODO: Re-assess these requirements and separate sections by global and resource-specific
-
 **Global Variables**
 
 |Variable|Description|Default Value|
@@ -68,20 +66,22 @@ These are the variables used along with their defaults. For any without a value 
 |aks_node_max_count|Maximum number of nodes in the AKS cluster|`1`|
 |aks_nginx_ingress_values_file|Path to a custom values file used to deploy Nginx Ingress|`""`|
 |aks_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|`"1.29.2"`|
-|aks_cert_manager_values_file|Path to a custom values file used to deploy Cert Manager|`""`|
-|aks_cert_manager_chart_version|The chart version for the cert-manager Helm chart|`"v0.13.1"`|
 
 ## Outputs
 
 This template will output the following information:
 
-> TODO: Re-assess outputs.
-
 |Output|Description|
 |-|-|
-|aks_cluster|Provides details of the AKS Cluster|
-|aks_cluster_groups|Provides details of the AAD groups used for accessing and managing the cluster|
-|container_registry|Provides details of the Container Registry|
+|aks_cluster_id|Resource ID of the AKS Cluster|
+|aks_cluster_name|Name of the AKS Cluster|
+|aks_cluster_resource_group_name|Name of the AKS Cluster Resource Group|
+|aks_cluster_node_resource_group_name|Name of the AKS Cluster Resource Group|
+|aks_cluster_principal_id|Principal ID of the AKS Cluster identity|
+|aks_cluster_kubeconfig|Kubeconfig for the AKS Cluster|
+|aks_cluster_ad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
+|container_registry_id|Resource ID of the container registry|
+|container_registry_name|Name of the container registry|
 
 ## Deployment
 
@@ -155,6 +155,8 @@ Manifests under [files/kubernetes/manifests/rbac](./files/kubernetes/manifests/r
 #### Helm Charts
 
 Additional values for some Helm charts have been stored under [files/kubernetes/helm/values](./files/kubernetes/helm/values) to provide some additional options for services to deploy to the cluster.
+
+These charts include Cert Manager, Grafana, Prometheus and Loki
 
 ## Maintenance
 

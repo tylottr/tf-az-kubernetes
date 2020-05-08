@@ -192,18 +192,6 @@ resource "azurerm_kubernetes_cluster" "main" {
   }
 }
 
-locals {
-  main_aks_config = var.enable_aks_aad_rbac ? azurerm_kubernetes_cluster.main.kube_admin_config_raw : azurerm_kubernetes_cluster.main.kube_config_raw
-}
-
-resource "local_file" "main_aks_config" {
-  // Required for initialising the cert-manager
-  filename        = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
-  file_permission = "0600"
-
-  sensitive_content = local.main_aks_config
-}
-
 resource "azurerm_role_assignment" "main_aks_readers" {
   for_each = local.aad_kubernetes_groups
 
@@ -376,11 +364,6 @@ data "helm_repository" "stable" {
   url  = "https://kubernetes-charts.storage.googleapis.com"
 }
 
-data "helm_repository" "jetstack" {
-  name = "jetstack"
-  url  = "https://charts.jetstack.io"
-}
-
 resource "helm_release" "main_ingress" {
   name = "nginx-ingress"
 
@@ -392,25 +375,4 @@ resource "helm_release" "main_ingress" {
   values = var.aks_nginx_ingress_values_file == "" ? [file("${path.module}/files/kubernetes/helm/values/nginx-ingress.yaml")] : [file(var.aks_nginx_ingress_values_file)]
 
   wait = false
-}
-
-resource "helm_release" "main_cert_manager" {
-  name = "cert-manager"
-
-  repository = data.helm_repository.jetstack.metadata[0].name
-  chart      = "cert-manager"
-  version    = var.aks_cert_manager_chart_version
-  namespace  = "kube-system"
-
-  values = var.aks_cert_manager_values_file == "" ? [file("${path.module}/files/kubernetes/helm/values/cert-manager.yaml")] : [file(var.aks_cert_manager_values_file)]
-
-  wait = false
-
-  provisioner "local-exec" {
-    command = "kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.13/deploy/manifests/00-crds.yaml --validate=false"
-
-    environment = {
-      KUBECONFIG = local_file.main_aks_config.filename
-    }
-  }
 }

@@ -28,7 +28,7 @@ provider "azuread" {
 
 locals {
   kubeconfig = {
-    config_path = local_file.main_aks_config.filename
+    aks_config = var.enable_aks_aad_rbac ? azurerm_kubernetes_cluster.main.kube_admin_config_raw : azurerm_kubernetes_cluster.main.kube_config_raw
 
     host = "${
       var.enable_aks_aad_rbac
@@ -59,7 +59,6 @@ locals {
 provider "kubernetes" {
   version = "~> 1.11.2"
 
-  config_path      = local.kubeconfig.config_path
   load_config_file = false
 
   host                   = local.kubeconfig.host
@@ -73,7 +72,6 @@ provider "helm" {
   version = "~> 1.1.1"
 
   kubernetes {
-    config_path      = local.kubeconfig.config_path
     load_config_file = false
 
     host                   = local.kubeconfig.host
