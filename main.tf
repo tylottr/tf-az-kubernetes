@@ -1,27 +1,12 @@
-# Data
-resource "tls_private_key" "main" {
-  algorithm = "RSA"
-}
-
-resource "local_file" "main_ssh_public" {
-  filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}.id_rsa.pub"
-  sensitive_content = tls_private_key.main.public_key_openssh
-}
-
-resource "local_file" "main_ssh_private" {
-  filename          = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}.id_rsa"
-  sensitive_content = tls_private_key.main.private_key_pem
-  file_permission   = "0600"
-}
-
-# Resources
-## Azure RBAC
+#######
+# RBAC
+#######
 locals {
-  aad_kubernetes_groups = {
+  aad_kubernetes_groups = var.enable_aks_aad_rbac ? {
     // Pair is { <group name> = <cluster role> }
     "Kubernetes Cluster Admins"  = "cluster-admin"
     "Kubernetes Cluster Viewers" = "view"
-  }
+  } : {}
 
   aad_groups = merge(
     local.aad_kubernetes_groups
@@ -34,68 +19,56 @@ resource "azuread_group" "main" {
   name = "${local.resource_prefix} ${each.key}"
 }
 
-## Azure Kubernetes
-### Azure AD Service Principal for Kubernetes
-resource "azuread_application" "main_aks" {
-  name = local.resource_prefix
-}
-
-resource "random_password" "main_aks" {
-  length = 40
-}
-
-resource "azuread_application_password" "main_aks" {
-  application_object_id = azuread_application.main_aks.id
-  value                 = random_password.main_aks.result
-  end_date_relative     = "43800h" # 5 years
-}
-
-resource "azuread_service_principal" "main_aks" {
-  application_id               = azuread_application.main_aks.application_id
-  app_role_assignment_required = false
-
-  provisioner "local-exec" {
-    // Sleep for 45 seconds to allow the service principal to propagate fully.
-    command    = "sleep 45"
-    on_failure = continue
-  }
-}
-
-## Resource Group
+#################
+# Resource Group
+#################
 resource "azurerm_resource_group" "main" {
+  count = var.resource_group_name == "" ? 1 : 0
+
   name     = "${local.resource_prefix}-rg"
   location = var.location
   tags     = local.tags
 }
 
-## Storage
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name == "" ? azurerm_resource_group.main[0].name : var.resource_group_name
+}
+
+#####################
+# Container Registry
+#####################
 resource "azurerm_container_registry" "main" {
   count = var.enable_acr ? 1 : 0
 
   name                = lower(replace("${local.resource_prefix}acr", "/[-_]/", ""))
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
-  sku           = var.acr_sku
-  admin_enabled = var.acr_admin_enabled
+  sku                      = var.acr_sku
+  georeplication_locations = length(var.acr_georeplication_locations) < 1 ? null : var.acr_georeplication_locations
+
+  admin_enabled = var.enable_acr_admin
 }
 
+// TODO: Get the Service Principal from the AKS cluster to allow for this to work.
 resource "azurerm_role_assignment" "main_acr_pull" {
   count = var.enable_acr ? 1 : 0
 
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
-  principal_id         = azuread_service_principal.main_aks.id
+  principal_id         = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
 
-## Monitoring
+#############
+# Monitoring
+#############
 resource "azurerm_log_analytics_workspace" "main" {
   count = var.enable_aks_oms_monitoring ? 1 : 0
 
-  name                = "${local.resource_prefix}-la"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  name                = "${local.resource_prefix}-oms"
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
   sku               = "PerGB2018"
@@ -110,32 +83,39 @@ resource "azurerm_role_assignment" "main_oms_readers" {
   principal_id         = azuread_group.main[each.key].id
 }
 
-## Kubernetes Compute (Azure-level)
+###################################
+# Kubernetes Cluster - Azure Level
+###################################
+data "azurerm_subnet" "main" {
+  count = var.enable_aks_advanced_networking ? 1 : 0
+
+  name                 = var.aks_subnet_name
+  virtual_network_name = var.aks_subnet_vnet_name
+  resource_group_name  = var.aks_subnet_vnet_resource_group_name
+}
+
 resource "azurerm_role_assignment" "main_aks_network_contributor" {
   count = var.enable_aks_advanced_networking ? 1 : 0
 
-  scope                = var.aks_subnet_id
+  scope                = data.azurerm_subnet.main[0].id
   role_definition_name = "Network Contributor"
-  principal_id         = azuread_service_principal.main_aks.id
+  principal_id         = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
 
 resource "azurerm_kubernetes_cluster" "main" {
   name                = local.resource_prefix
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
-
-  service_principal {
-    client_id     = azuread_service_principal.main_aks.application_id
-    client_secret = azuread_application_password.main_aks.value
-  }
 
   kubernetes_version = var.aks_kubernetes_version
 
   dns_prefix          = local.resource_prefix
   node_resource_group = "${local.resource_prefix}-node-rg"
 
-  api_server_authorized_ip_ranges = ["0.0.0.0/0"]
+  identity {
+    type = "SystemAssigned"
+  }
 
   role_based_access_control {
     enabled = true
@@ -159,6 +139,8 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
   }
 
+  api_server_authorized_ip_ranges = ["0.0.0.0/0"]
+
   network_profile {
     network_plugin    = var.enable_aks_advanced_networking ? "azure" : "kubenet"
     load_balancer_sku = "Standard"
@@ -169,13 +151,6 @@ resource "azurerm_kubernetes_cluster" "main" {
     docker_bridge_cidr = "172.17.0.1/16"
     service_cidr       = var.aks_service_cidr
     dns_service_ip     = cidrhost(var.aks_service_cidr, 10)
-  }
-
-  linux_profile {
-    admin_username = local.vm_admin_username
-    ssh_key {
-      key_data = tls_private_key.main.public_key_openssh
-    }
   }
 
   default_node_pool {
@@ -191,7 +166,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     min_count       = var.aks_node_min_count
     max_count       = var.aks_node_max_count
 
-    vnet_subnet_id = var.enable_aks_advanced_networking ? var.aks_subnet_id : null
+    vnet_subnet_id = var.enable_aks_advanced_networking ? data.azurerm_subnet.main[0].id : null
   }
 
   addon_profile {
@@ -206,34 +181,15 @@ resource "azurerm_kubernetes_cluster" "main" {
     }
   }
 
-  identity {
-    type = "SystemAssigned"
-  }
-
   lifecycle {
     ignore_changes = [
       default_node_pool,
       kubernetes_version,
       service_principal,
       role_based_access_control,
-      addon_profile[0].kube_dashboard
+      addon_profile
     ]
   }
-}
-
-locals {
-  main_aks_config = "${
-    var.enable_aks_aad_rbac
-    ? azurerm_kubernetes_cluster.main.kube_admin_config_raw
-    : azurerm_kubernetes_cluster.main.kube_config_raw
-  }"
-}
-
-resource "local_file" "main_aks_config" {
-  filename        = ".terraform/.kube/clusters/${azurerm_kubernetes_cluster.main.name}"
-  file_permission = "0600"
-
-  sensitive_content = local.main_aks_config
 }
 
 resource "azurerm_role_assignment" "main_aks_readers" {
@@ -259,15 +215,32 @@ data "azurerm_monitor_diagnostic_categories" "main_aks" {
 resource "azurerm_monitor_diagnostic_setting" "main_aks" {
   count = var.enable_aks_oms_monitoring ? 1 : 0
 
-  name                       = local.resource_prefix
+  name                       = "${local.resource_prefix}-diag"
   target_resource_id         = azurerm_kubernetes_cluster.main.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main[0].id
 
   dynamic log {
     for_each = data.azurerm_monitor_diagnostic_categories.main_aks.logs
+    iterator = log_category
 
     content {
-      category = log.value
+      category = log_category.value
+      enabled  = true
+
+      retention_policy {
+        enabled = true
+        days    = 7
+      }
+    }
+  }
+
+  dynamic metric {
+    for_each = data.azurerm_monitor_diagnostic_categories.main_aks.metrics
+    iterator = metric_category
+
+    content {
+      category = metric_category.value
+      enabled  = true
 
       retention_policy {
         enabled = true
@@ -277,53 +250,9 @@ resource "azurerm_monitor_diagnostic_setting" "main_aks" {
   }
 }
 
-## Kubernetes Compute Environment (Kubernetes-level) - Helm
-data "helm_repository" "stable" {
-  name = "stable"
-  url  = "https://kubernetes-charts.storage.googleapis.com"
-}
-
-data "helm_repository" "jetstack" {
-  name = "jetstack"
-  url  = "https://charts.jetstack.io"
-}
-
-### Cluster Utilities
-resource "helm_release" "main_ingress" {
-  name = "nginx-ingress"
-
-  repository = data.helm_repository.stable.metadata[0].name
-  chart      = "nginx-ingress"
-  version    = var.aks_nginx_ingress_chart_version
-  namespace  = "kube-system"
-
-  values = [templatefile("${path.module}/templates/kubernetes/helm/values/nginx-ingress.tpl.yaml", {})]
-
-  wait = false
-}
-
-resource "helm_release" "main_cert_manager" {
-  name = "cert-manager"
-
-  repository = data.helm_repository.jetstack.metadata[0].name
-  chart      = "cert-manager"
-  version    = var.aks_cert_manager_chart_version
-  namespace  = "kube-system"
-
-  values = [templatefile("${path.module}/templates/kubernetes/helm/values/cert-manager.tpl.yaml", {})]
-
-  wait = false
-
-  provisioner "local-exec" {
-    command = "kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.13/deploy/manifests/00-crds.yaml --validate=false"
-
-    environment = {
-      KUBECONFIG = local_file.main_aks_config.filename
-    }
-  }
-}
-
-## Kubernetes Compute Environment (Kubernetes-level) - Storage
+#####################################
+# Kubernetes Cluster - Cluster-Level
+#####################################
 resource "kubernetes_storage_class" "main_azure_disk" {
   // Default storage classes do not expand. Create these in the cluster as part of the deployment.
   for_each = {
@@ -378,8 +307,6 @@ resource "kubernetes_storage_class" "main_azure_file" {
   }
 }
 
-## Kubernetes RBAC
-### OMS Integration (Only effective if AAD Integration is not enabled)
 resource "kubernetes_cluster_role" "main_oms_reader" {
   metadata {
     name = "containerHealth-log-reader"
@@ -411,7 +338,6 @@ resource "kubernetes_cluster_role_binding" "main_oms_reader" {
   }
 }
 
-### RBAC-Integrated Users
 resource "kubernetes_cluster_role_binding" "main_aad_groups" {
   for_each = local.aad_kubernetes_groups
 
@@ -431,4 +357,22 @@ resource "kubernetes_cluster_role_binding" "main_aad_groups" {
     namespace = "kube-system"
     name      = azuread_group.main[each.key].id
   }
+}
+
+data "helm_repository" "stable" {
+  name = "stable"
+  url  = "https://kubernetes-charts.storage.googleapis.com"
+}
+
+resource "helm_release" "main_ingress" {
+  name = "nginx-ingress"
+
+  repository = data.helm_repository.stable.metadata[0].name
+  chart      = "nginx-ingress"
+  version    = var.aks_nginx_ingress_chart_version
+  namespace  = "kube-system"
+
+  values = var.aks_nginx_ingress_values_file == "" ? [file("${path.module}/files/kubernetes/helm/values/nginx-ingress.yaml")] : [file(var.aks_nginx_ingress_values_file)]
+
+  wait = false
 }

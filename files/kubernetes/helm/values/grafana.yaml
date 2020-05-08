@@ -1,6 +1,8 @@
-# repo: helm repo add stable https://kubernetes-charts.storage.googleapis.com
-# helm2: helm install --name grafana stable/grafana --version 5.0.5 --namespace monitoring --values ./grafana.yaml
-# helm3: helm install grafana stable/grafana --version 5.0.5 --namespace monitoring --values ./grafana.yaml
+# Provision steps:
+#
+# helm repo add stable https://kubernetes-charts.storage.googleapis.com
+# helm install grafana stable/grafana --version 5.0.5 --namespace monitoring --values ./grafana.yaml
+
 replicas: 1
 persistence:
   enabled: false

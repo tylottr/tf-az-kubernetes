@@ -1,6 +1,7 @@
-# repo: helm repo add stable https://kubernetes-charts.storage.googleapis.com
-# helm2: helm install --name prometheus stable/prometheus --version 11.0.2 --namespace monitoring --values ./prometheus.yaml
-# helm3: helm install prometheus stable/prometheus --version 11.0.2 --namespace monitoring --values ./prometheus.yaml
+# Provision steps:
+#
+# helm repo add stable https://kubernetes-charts.storage.googleapis.com
+# helm install prometheus stable/prometheus --version 11.0.2 --namespace monitoring --values ./prometheus.yaml
 rbac:
   create: true
 
