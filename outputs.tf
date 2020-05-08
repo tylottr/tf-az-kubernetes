@@ -1,32 +1,32 @@
 ######################
 # AKS Cluster Details
 ######################
-output "aks_cluster_id" {
+output "aks_id" {
   description = "Resource ID of the AKS Cluster"
   value = azurerm_kubernetes_cluster.main.id
 }
 
-output "aks_cluster_name" {
+output "aks_name" {
   description = "Name of the AKS Cluster"
   value = azurerm_kubernetes_cluster.main.name
 }
 
-output "aks_cluster_resource_group_name" {
+output "aks_resource_group_name" {
   description = "Name of the AKS Cluster Resource Group"
   value = azurerm_kubernetes_cluster.main.resource_group_name
 }
 
-output "aks_cluster_node_resource_group_name" {
+output "aks_node_resource_group_name" {
   description = "Name of the AKS Cluster Resource Group"
-  value = azurerm_kubernetes_cluster.main.node_esource_group
+  value = azurerm_kubernetes_cluster.main.node_resource_group
 }
 
-output "aks_cluster_principal_id" {
+output "aks_principal_id" {
   description = "Principal ID of the AKS Cluster identity"
   value = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
 
-output "aks_cluster_kubeconfig" {
+output "aks_kubeconfig" {
   description = "Kubeconfig for the AKS Cluster"
   value = local.kubeconfig
   sensitive = true
@@ -35,7 +35,7 @@ output "aks_cluster_kubeconfig" {
 ########################
 # AKS Cluster AD Groups
 ########################
-output "aks_cluster_ad_groups" {
+output "aks_ad_groups" {
   description = "Provides details of the AAD groups used for accessing and managing the AKS Cluster"
   value = {
     for group, role in local.aad_kubernetes_groups :
