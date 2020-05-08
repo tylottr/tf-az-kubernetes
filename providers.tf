@@ -1,12 +1,17 @@
 # Config
 terraform {
   required_version = ">= 0.12.24"
+
+  required_providers {
+    azurerm    = ">= 2.9.0"
+    azuread    = ">= 0.8.0"
+    kubernetes = ">= 1.11.2"
+    helm       = ">= 1.1.1"
+  }
 }
 
 # Providers
 provider "azurerm" {
-  version = "~> 2.9.0"
-
   features {}
 
   tenant_id       = var.tenant_id
@@ -17,8 +22,6 @@ provider "azurerm" {
 }
 
 provider "azuread" {
-  version = "~> 0.8.0"
-
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
 
@@ -57,8 +60,6 @@ locals {
 }
 
 provider "kubernetes" {
-  version = "~> 1.11.2"
-
   load_config_file = false
 
   host                   = local.kubeconfig.host
@@ -69,8 +70,6 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "~> 1.1.1"
-
   kubernetes {
     load_config_file = false
 
