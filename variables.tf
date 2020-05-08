@@ -1,4 +1,7 @@
-# Global
+###################
+# Global Variables
+###################
+
 variable "tenant_id" {
   description = "The tenant id of this deployment"
   type        = string
@@ -32,7 +35,6 @@ variable "location" {
 variable "resource_prefix" {
   description = "A prefix for the name of the resource, used to generate the resource names"
   type        = string
-  default     = "kubernetes"
 }
 
 variable "tags" {
@@ -41,8 +43,11 @@ variable "tags" {
   default     = {}
 }
 
-# Resource-specific
-## Azure Container Registry
+##############################
+# Resource-Specific Variables
+##############################
+
+# Azure Container Registry
 variable "enable_acr" {
   description = "Flag used to enable ACR"
   type        = bool
@@ -55,14 +60,13 @@ variable "acr_sku" {
   default     = "Basic"
 }
 
-variable "acr_admin_enabled" {
+variable "enable_acr_admin" {
   description = "Flag used to enable ACR Admin"
   type        = bool
   default     = false
 }
 
-## AKS Cluster
-### Azure-level
+# AKS Cluster - Azure Level
 variable "aks_kubernetes_version" {
   description = "Version of Kubernetes to use in the cluster"
   type        = string
@@ -150,10 +154,10 @@ variable "aks_node_min_count" {
 variable "aks_node_max_count" {
   description = "Maximum number of nodes in the AKS cluster"
   type        = number
-  default     = 5
+  default     = 1
 }
 
-### K8s-level
+# AKS Cluster - Cluster Level
 variable "aks_nginx_ingress_chart_version" {
   description = "The chart version for the nginx-ingress Helm chart"
   type        = string
@@ -166,7 +170,9 @@ variable "aks_cert_manager_chart_version" {
   default     = "v0.13.1"
 }
 
+#########
 # Locals
+#########
 locals {
   resource_prefix = "${var.resource_prefix}-aks"
 
@@ -176,6 +182,4 @@ locals {
       deployedBy = "Terraform"
     }
   )
-
-  vm_admin_username = "vmadmin"
 }

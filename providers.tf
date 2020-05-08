@@ -5,7 +5,7 @@ terraform {
 
 # Providers
 provider "azurerm" {
-  version = "~> 2.3.0"
+  version = "~> 2.9.0"
 
   features {}
 
@@ -17,7 +17,7 @@ provider "azurerm" {
 }
 
 provider "azuread" {
-  version = "~> 0.7.0"
+  version = "~> 0.8.0"
 
   tenant_id       = var.tenant_id
   subscription_id = var.subscription_id
@@ -57,7 +57,7 @@ locals {
 }
 
 provider "kubernetes" {
-  version = "~> 1.11.1"
+  version = "~> 1.11.2"
 
   config_path      = local.kubeconfig.config_path
   load_config_file = false
@@ -84,14 +84,6 @@ provider "helm" {
   }
 }
 
-provider "random" {
-  version = "~> 2.2.1"
-}
-
 provider "local" {
   version = "~> 1.4.0"
-}
-
-provider "tls" {
-  version = "~> 2.1.1"
 }

@@ -6,10 +6,8 @@ output "aks_cluster" {
     resource_group      = azurerm_kubernetes_cluster.main.resource_group_name
     node_resource_group = azurerm_kubernetes_cluster.main.node_resource_group
 
-    service_principal_application_id = azuread_service_principal.main_aks.application_id
-    service_principal_object_id      = azuread_service_principal.main_aks.object_id
-
-    managed_identity_id = azurerm_kubernetes_cluster.main.identity[0].principal_id
+    service_principal_application_id = azurerm_kubernetes_cluster.main.kubelet_identity[0].client_id
+    service_principal_object_id      = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
   }
 }
 
@@ -27,7 +25,7 @@ output "aks_cluster_groups" {
 output "container_registry" {
   description = "Provides details of the Container Registry"
   value = var.enable_acr ? {
-    name        = azurerm_container_registry.main[0].name
     resource_id = azurerm_container_registry.main[0].id
+    name        = azurerm_container_registry.main[0].name
   } : null
 }

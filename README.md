@@ -3,19 +3,7 @@
 This template will create a Kubernetes environment and bootstrap it so it is ready for use.
 
 The environment deployed contains the following resources:
-* A service policy to allow K8s to access the necessary Azure resources
-* OPTIONAL: An Azure Container Registry for storing images
-* RBAC Groups for in-cluster cluster-admins and viewers
-* A bootstrapped Kubernetes cluster 
-  * Kubeconfig stored in .terraform/.kube/clusters/your_cluster_name
-  * Admin user named vmadmin with the ssh keys stored in .terraform/.kube/clusters/your_cluster_name.id_rsa
-  * Kubernetes Dashboard disabled by default
-  * A read-only binding allowing OMS to use the clusterUser account necessary access
-  * A cluster-admin and view cluster role binding to an AAD Group
-  * Helm releases have been configured so they are immediately available
-    * stable/nginx-ingress
-    * jetstack/cert-manager
-  * Storage classes for Azure standard and premium storage
+> TODO: Re-assess these requirements.
 
 Following deployment there are some additional steps that need to be performed that are specific to the application - see the Post Deployment section.
 
@@ -28,6 +16,7 @@ Prior to deployment you need the following:
 * [helm](https://helm.sh/)
 
 In Azure, you also need:
+> TODO: Re-assess these requirements.
 * A user account or service policy with Contributor level access to the target subscription and the Application Administrator and Group Administrator AAD roles
 * If using AAD RBAC Integration, you also require a Client and Server component. See [here](https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration-cli) for the steps
     * For viewing live data, also consult [this](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-livedata-setup) page
@@ -35,6 +24,8 @@ In Azure, you also need:
 ## Variables
 
 These are the variables used along with their defaults. For any without a value in default, the value must be filled in unless otherwise sateted otherwise the deployment will encounter failures.
+
+> TODO: Re-assess these requirements and separate sections by global and resource-specific
 
 |Variable|Description|Default|
 |-|-|-|
@@ -70,6 +61,8 @@ These are the variables used along with their defaults. For any without a value 
 
 This template will output the following information:
 
+> TODO: Re-assess outputs.
+
 |Output|Description|
 |-|-|
 |aks_cluster|Provides details of the AKS Cluster|
@@ -96,6 +89,8 @@ In the event the deployment needs to be destroyed, you can run `terraform destro
 ## Post-Deployment
 
 ### Connecting to the Cluster
+
+> TODO: Replace these steps and also use a rolebinding to enable retrieval of configuration by the resource owner.
 
 You can connect to your new cluster using two methods:
 
