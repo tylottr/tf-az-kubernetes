@@ -50,7 +50,7 @@ resource "azurerm_role_assignment" "main_acr_pull" {
 
   scope                = azurerm_container_registry.main[count.index].id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+  principal_id         = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
 
 #############
@@ -84,7 +84,7 @@ resource "azurerm_role_assignment" "main_aks_network_contributor" {
 
   scope                = var.aks_subnet_id
   role_definition_name = "Network Contributor"
-  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+  principal_id         = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
 
 resource "azurerm_kubernetes_cluster" "main" {
