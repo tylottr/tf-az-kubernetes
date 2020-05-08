@@ -3,7 +3,17 @@
 This template will create a Kubernetes environment and bootstrap it so it is ready for use.
 
 The environment deployed contains the following resources:
-> TODO: Re-assess these requirements.
+
+- If using AAD Integration, a Cluster-Admin and Cluster-Viewer AD group will be created that are then mapped to the cluster internally.
+- A resource group to contain your AKS resources. This will be omitted if you use your own resource group.
+- *(Optional)* An Azure Container Registry that is automatically allowing the cluster access to it.
+- *(Optional)* A Log Analytics Workspace configured to pull in AKS Diagnostics, as well as internal logs and events
+- An AKS Cluster with a single node pool
+    - *(Optional)* Calico or Azure Network Policy
+    - *(Optional)* This can be integrated with an existing Subnet
+- Storage Classes for Azure Disk and Azure File storage types
+- Roles allowing OMS access and AAD Group access
+- The Nginx Ingress Controller with default values
 
 Following deployment there are some additional steps that need to be performed that are specific to the application - see the Post Deployment section.
 
@@ -17,8 +27,7 @@ Prior to deployment you need the following:
 * [helm](https://helm.sh/)
 
 In Azure, you also need:
-> TODO: Re-assess these requirements.
-* A user account or service policy with Contributor level access to the target subscription and the Application Administrator and Group Administrator AAD roles
+* A user account or service policy with Contributor level access to the target subscription and the Group Administrator AAD role
 * If using AAD RBAC Integration, you also require a Client and Server component. See [here](https://docs.microsoft.com/en-us/azure/aks/azure-ad-integration-cli) for the steps
     * For viewing live data, also consult [this](https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-livedata-setup) page
 
@@ -108,13 +117,9 @@ In the event the deployment needs to be destroyed, you can run `terraform destro
 
 ### Connecting to the Cluster
 
-> TODO: Replace these steps and also use a rolebinding to enable retrieval of configuration by the resource owner.
+You can connect to your new cluster using the following command: `az aks get-credentials --name <REPLACE_WITH_CLUSTER_NAME> --resource-group <REPLACE_WITH_CLUSTER_RESOURCE_GROUP>`
 
-You can connect to your new cluster using two methods:
-
-1. Use the Kubeconfig file created under `.terraform/.kube/clusters` directory to get immediate access
-2. Run `az aks get-credentials --name <REPLACE_WITH_CLUSTER_NAME> --resource-group <REPLACE_WITH_CLUSTER_RESOURCE_GROUP>`
-    * If using AAD RBAC integration you must be in one of the created AD groups to properly authenticate.
+- If using AAD RBAC integration you must be in one of the created AD groups to properly authenticate.
 
 ### Adding users to AD Groups
 

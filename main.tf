@@ -51,7 +51,6 @@ resource "azurerm_container_registry" "main" {
   admin_enabled = var.enable_acr_admin
 }
 
-// TODO: Get the Service Principal from the AKS cluster to allow for this to work.
 resource "azurerm_role_assignment" "main_acr_pull" {
   count = var.enable_acr ? 1 : 0
 
