@@ -6,7 +6,7 @@ terraform {
     azurerm    = ">= 2.9.0"
     azuread    = ">= 0.8.0"
     kubernetes = ">= 1.11.2"
-    helm       = ">= 1.1.1"
+    helm       = ">= 1.2.1"
   }
 }
 

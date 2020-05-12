@@ -358,20 +358,17 @@ resource "kubernetes_cluster_role_binding" "main_aad_groups" {
   }
 }
 
-data "helm_repository" "stable" {
-  name = "stable"
-  url  = "https://kubernetes-charts.storage.googleapis.com"
-}
-
 resource "helm_release" "main_ingress" {
   name = "nginx-ingress"
 
-  repository = data.helm_repository.stable.metadata[0].name
+  repository = "https://kubernetes-charts.storage.googleapis.com"
   chart      = "nginx-ingress"
   version    = var.aks_nginx_ingress_chart_version
   namespace  = "kube-system"
 
-  values = var.aks_nginx_ingress_values_file == "" ? [file("${path.module}/files/kubernetes/helm/values/nginx-ingress.yaml")] : [file(var.aks_nginx_ingress_values_file)]
+  values = var.aks_nginx_ingress_values_file == "" ? [
+    file("${path.module}/files/kubernetes/helm/values/nginx-ingress.yaml")
+  ] : [file(var.aks_nginx_ingress_values_file)]
 
   wait = false
 }
