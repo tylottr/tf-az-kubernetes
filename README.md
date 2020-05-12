@@ -82,13 +82,13 @@ This template will output the following information:
 
 |Output|Description|
 |-|-|
-|aks_cluster_id|Resource ID of the AKS Cluster|
-|aks_cluster_name|Name of the AKS Cluster|
-|aks_cluster_resource_group_name|Name of the AKS Cluster Resource Group|
-|aks_cluster_node_resource_group_name|Name of the AKS Cluster Resource Group|
-|aks_cluster_principal_id|Principal ID of the AKS Cluster identity|
-|aks_cluster_kubeconfig|Kubeconfig for the AKS Cluster|
-|aks_cluster_ad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
+|aks_id|Resource ID of the AKS Cluster|
+|aks_name|Name of the AKS Cluster|
+|aks_resource_group_name|Name of the AKS Cluster Resource Group|
+|aks_node_resource_group_name|Name of the AKS Cluster Resource Group|
+|aks_principal_id|Principal ID of the AKS Cluster identity|
+|aks_kubeconfig|Kubeconfig for the AKS Cluster|
+|aks_ad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
 |container_registry_id|Resource ID of the container registry|
 |container_registry_name|Name of the container registry|
 
