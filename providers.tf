@@ -3,10 +3,10 @@ terraform {
   required_version = ">= 0.12.24"
 
   required_providers {
-    azurerm    = ">= 2.9.0"
-    azuread    = ">= 0.8.0"
-    kubernetes = ">= 1.11.2"
-    helm       = ">= 1.2.1"
+    azurerm    = "~> 2.13"
+    azuread    = "~> 0.10"
+    kubernetes = "~> 1.11"
+    helm       = "~> 1.2"
   }
 }
 

@@ -70,7 +70,6 @@ These are the variables used along with their defaults. For any without a value 
 |aks_subnet_vnet_resource_group_name|Name of the resource group for aks_subnet_vnet_name for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
 |aks_service_cidr|Service CIDR for AKS|`"10.0.0.0/16"`|
 |aks_node_size|Size of nodes in the AKS cluster|`"Standard_B2ms"`|
-|aks_node_disk_size|Disk size of nodes in the AKS cluster (Minimum 30)|`127`|
 |aks_node_min_count|Minimum number of nodes in the AKS cluster|`1`|
 |aks_node_max_count|Maximum number of nodes in the AKS cluster|`1`|
 |aks_nginx_ingress_values_file|Path to a custom values file used to deploy Nginx Ingress|`""`|

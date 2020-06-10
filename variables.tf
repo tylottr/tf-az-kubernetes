@@ -161,12 +161,6 @@ variable "aks_node_size" {
   default     = "Standard_B2ms"
 }
 
-variable "aks_node_disk_size" {
-  description = "Disk size of nodes in the AKS cluster (Minimum 30)"
-  type        = number
-  default     = 127
-}
-
 variable "aks_node_min_count" {
   description = "Minimum number of nodes in the AKS cluster"
   type        = number
@@ -197,11 +191,4 @@ variable "aks_nginx_ingress_chart_version" {
 #########
 locals {
   resource_prefix = "${var.resource_prefix}-aks"
-
-  tags = merge(
-    var.tags,
-    {
-      deployedBy = "Terraform"
-    }
-  )
 }

@@ -27,7 +27,7 @@ resource "azurerm_resource_group" "main" {
 
   name     = "${local.resource_prefix}-rg"
   location = var.location
-  tags     = local.tags
+  tags     = var.tags
 }
 
 data "azurerm_resource_group" "main" {
@@ -43,7 +43,7 @@ resource "azurerm_container_registry" "main" {
   name                = lower(replace("${local.resource_prefix}acr", "/[-_]/", ""))
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   sku                      = var.acr_sku
   georeplication_locations = length(var.acr_georeplication_locations) < 1 ? null : var.acr_georeplication_locations
@@ -68,7 +68,7 @@ resource "azurerm_log_analytics_workspace" "main" {
   name                = "${local.resource_prefix}-oms"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   sku               = "PerGB2018"
   retention_in_days = 30
@@ -105,7 +105,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   name                = local.resource_prefix
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   kubernetes_version = var.aks_kubernetes_version
 
@@ -155,15 +155,14 @@ resource "azurerm_kubernetes_cluster" "main" {
   default_node_pool {
     name                  = "default"
     type                  = "VirtualMachineScaleSets"
-    tags                  = local.tags
+    tags                  = var.tags
     enable_auto_scaling   = true
     enable_node_public_ip = false
 
-    vm_size         = var.aks_node_size
-    os_disk_size_gb = var.aks_node_disk_size
-    node_count      = var.aks_node_min_count
-    min_count       = var.aks_node_min_count
-    max_count       = var.aks_node_max_count
+    vm_size    = var.aks_node_size
+    node_count = var.aks_node_min_count
+    min_count  = var.aks_node_min_count
+    max_count  = var.aks_node_max_count
 
     vnet_subnet_id = var.enable_aks_advanced_networking ? data.azurerm_subnet.main[0].id : null
   }

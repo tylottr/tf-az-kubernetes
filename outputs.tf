@@ -28,7 +28,7 @@ output "aks_principal_id" {
 
 output "aks_kubeconfig" {
   description = "Kubeconfig for the AKS Cluster"
-  value       = local.kubeconfig
+  value       = local.kubeconfig.aks_config
   sensitive   = true
 }
 
@@ -37,14 +37,14 @@ output "aks_kubeconfig" {
 ########################
 output "aks_ad_groups" {
   description = "Provides details of the AAD groups used for accessing and managing the AKS Cluster"
-  value = {
+  value = length(local.aad_kubernetes_groups) > 0 ? {
     for group, role in local.aad_kubernetes_groups :
     role => {
       name            = azuread_group.main[group].name
       object_id       = azuread_group.main[group].object_id
       kubernetes_role = role
     }
-  }
+  } : null
 }
 
 #####################
