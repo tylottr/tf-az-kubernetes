@@ -90,6 +90,8 @@ This template will output the following information:
 |aks_ad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
 |container_registry_id|Resource ID of the container registry|
 |container_registry_name|Name of the container registry|
+|container_registry_admin_user|Admin user for the container registry|
+|conainer_registry_admin_password|Admin password for the container registry|
 
 ## Deployment
 

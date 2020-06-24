@@ -109,7 +109,7 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   kubernetes_version = var.aks_kubernetes_version
 
-  dns_prefix          = local.resource_prefix
+  dns_prefix = local.resource_prefix
 
   identity {
     type = "SystemAssigned"

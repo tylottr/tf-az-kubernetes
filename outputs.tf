@@ -59,3 +59,15 @@ output "container_registry_name" {
   description = "Name of the container registry"
   value       = var.enable_acr ? azurerm_container_registry.main[0].name : null
 }
+
+output "container_registry_admin_user" {
+  description = "Admin user for the container registry"
+  value       = var.enable_acr_admin ? azurerm_container_registry.main[0].admin_username : null
+  sensitive   = true
+}
+
+output "conainer_registry_admin_password" {
+  description = "Admin password for the container registry"
+  value       = var.enable_acr_admin ? azurerm_container_registry.main[0].admin_password : null
+  sensitive   = true
+}
