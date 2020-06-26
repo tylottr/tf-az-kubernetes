@@ -28,7 +28,31 @@ output "aks_principal_id" {
 
 output "aks_kubeconfig" {
   description = "Kubeconfig for the AKS Cluster"
-  value       = local.kubeconfig.aks_config
+  value       = local.kubeconfig.kubeconfig_raw
+  sensitive   = true
+}
+
+output "aks_kubeconfig_host" {
+  description = "AKS Cluster Host"
+  value       = local.kubeconfig.host
+  sensitive   = true
+}
+
+output "aks_kubeconfig_cluster_ca_certificate" {
+  description = "AKS Cluster CA Certificate"
+  value       = local.kubeconfig.cluster_ca_certificate
+  sensitive   = true
+}
+
+output "aks_kubeconfig_client_certificate" {
+  description = "AKS Cluster Client Certificate"
+  value       = local.kubeconfig.client_certificate
+  sensitive   = true
+}
+
+output "aks_kubeconfig_client_key" {
+  description = "AKS Cluster Client Key"
+  value       = local.kubeconfig.client_key
   sensitive   = true
 }
 
@@ -50,23 +74,28 @@ output "aks_ad_groups" {
 #####################
 # Container Registry
 #####################
-output "container_registry_id" {
+output "acr_id" {
   description = "Resource ID of the container registry"
   value       = var.enable_acr ? azurerm_container_registry.main[0].id : null
 }
 
-output "container_registry_name" {
+output "acr_name" {
   description = "Name of the container registry"
   value       = var.enable_acr ? azurerm_container_registry.main[0].name : null
 }
 
-output "container_registry_admin_user" {
+output "acr_login_server" {
+  description = "Login server of the container registry"
+  value       = var.enable_acr ? azurerm_container_registry.main[0].login_server : null
+}
+
+output "acr_admin_user" {
   description = "Admin user for the container registry"
   value       = var.enable_acr_admin ? azurerm_container_registry.main[0].admin_username : null
   sensitive   = true
 }
 
-output "conainer_registry_admin_password" {
+output "acr_admin_password" {
   description = "Admin password for the container registry"
   value       = var.enable_acr_admin ? azurerm_container_registry.main[0].admin_password : null
   sensitive   = true

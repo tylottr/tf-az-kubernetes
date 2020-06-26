@@ -87,11 +87,16 @@ This template will output the following information:
 |aks_node_resource_group_name|Name of the AKS Cluster Resource Group|
 |aks_principal_id|Principal ID of the AKS Cluster identity|
 |aks_kubeconfig|Kubeconfig for the AKS Cluster|
+|aks_kubeconfig_host|AKS Cluster Host|
+|aks_kubeconfig_cluster_ca_certificate|AKS Cluster CA Certificate|
+|aks_kubeconfig_client_certificate|AKS Cluster Client Certificate|
+|aks_kubeconfig_client_key|AKS Cluster Client Key|
 |aks_ad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
-|container_registry_id|Resource ID of the container registry|
-|container_registry_name|Name of the container registry|
-|container_registry_admin_user|Admin user for the container registry|
-|conainer_registry_admin_password|Admin password for the container registry|
+|acr_id|Resource ID of the container registry|
+|acr_name|Name of the container registry|
+|acr_login_server|Login server of the container registry|
+|acr_admin_user|Admin user for the container registry|
+|acr_admin_password|Admin password for the container registry|
 
 ## Deployment
 

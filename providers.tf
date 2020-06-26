@@ -35,7 +35,7 @@ provider "azuread" {
 
 locals {
   kubeconfig = {
-    aks_config = var.enable_aks_aad_rbac ? azurerm_kubernetes_cluster.main.kube_admin_config_raw : azurerm_kubernetes_cluster.main.kube_config_raw
+    kubeconfig_raw = var.enable_aks_aad_rbac ? azurerm_kubernetes_cluster.main.kube_admin_config_raw : azurerm_kubernetes_cluster.main.kube_config_raw
 
     host = "${
       var.enable_aks_aad_rbac
