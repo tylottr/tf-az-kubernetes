@@ -37,43 +37,43 @@ These are the variables used along with their defaults. For any without a value 
 
 **Global Variables**
 
-|Variable|Description|Default Value|
+|Variable Name|Description|Type|Default Value|
 |-|-|-|
-|tenant_id|The tenant id of this deployment|`null`|
-|subscription_id|The subscription id of this deployment|`null`|
-|client_id|The client id used to authenticate to Azure|`null`|
-|client_secret|The client secret used to authenticate to Azure|`null`|
-|location|The location of this deployment|`"UK South"`|
-|resource_group_name|The name of an existing resource group - this will override the creation of a new resource group|`""`|
-|resource_prefix|A prefix for the name of the resource, used to generate the resource names||
-|tags|Tags given to the resources created by this template|`{}`|
+|tenant_id|The tenant id of this deployment|string|`null`|
+|subscription_id|The subscription id of this deployment|string|`null`|
+|client_id|The client id used to authenticate to Azure|string|`null`|
+|client_secret|The client secret used to authenticate to Azure|string|`null`|
+|location|The location of this deployment|string|`"UK South"`|
+|resource_group_name|The name of an existing resource group - this will override the creation of a new resource group|string|`""`|
+|resource_prefix|A prefix for the name of the resource, used to generate the resource names|string||
+|tags|Tags given to the resources created by this template|map(string)|`{}`|
 
 **Resource-Specific Variables**
 
-|Variable|Description|Default Value|
+|Variable Name|Description|Type|Default Value|
 |-|-|-|
-|enable_acr|Flag used to enable ACR|`false`|
-|acr_sku|SKU of the ACR|`"Basic"`|
-|acr_georeplication_locations|Georeplication locations for ACR (Premium tier required)|`[]`|
-|enable_acr_admin|Flag used to enable ACR Admin|`false`|
-|aks_kubernetes_version|Version of Kubernetes to use in the cluster|`null`|
-|enable_aks_oms_monitoring|Flag used to enable Log Analytics|`false`|
-|enable_aks_aad_rbac|Flag used to enable AAD RBAC Integration|`false`|
-|aks_aad_tenant_id|Tenant ID used for AAD RBAC (defaults to current tenant)|`null`|
-|aks_aad_client_app_id|App ID of the client application used for AAD RBAC|`null`|
-|aks_aad_server_app_id|App ID of the server application used for AAD RBAC|`null`|
-|aks_aad_server_app_secret|App Secret of the server application used for AAD RBAC|`null`|
-|enable_aks_calico|Flag used to enable Calico CNI (Ignored if enable_aks_advanced_networking is true)|`false`|
-|enable_aks_advanced_networking|Flag used to enable Azure CNI|`false`|
-|aks_subnet_name|Name of the subnet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
-|aks_subnet_vnet_name|Name of the aks_subnet_name's VNet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
-|aks_subnet_vnet_resource_group_name|Name of the resource group for aks_subnet_vnet_name for Azure CNI (Ignored if enable_aks_advanced_networking is false)|`null`|
-|aks_service_cidr|Service CIDR for AKS|`"10.0.0.0/16"`|
-|aks_node_size|Size of nodes in the AKS cluster|`"Standard_B2ms"`|
-|aks_node_min_count|Minimum number of nodes in the AKS cluster|`1`|
-|aks_node_max_count|Maximum number of nodes in the AKS cluster|`1`|
-|aks_nginx_ingress_values_file|Path to a custom values file used to deploy Nginx Ingress|`""`|
-|aks_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|`"1.29.2"`|
+|enable_acr|Flag used to enable ACR|bool|`false`|
+|acr_sku|SKU of the ACR|string|`"Basic"`|
+|acr_georeplication_locations|Georeplication locations for ACR (Premium tier required)|list|`[]`|
+|enable_acr_admin|Flag used to enable ACR Admin|bool|`false`|
+|aks_kubernetes_version|Version of Kubernetes to use in the cluster|string|`null`|
+|enable_aks_oms_monitoring|Flag used to enable Log Analytics|bool|`false`|
+|enable_aks_aad_rbac|Flag used to enable AAD RBAC Integration|bool|`false`|
+|aks_aad_tenant_id|Tenant ID used for AAD RBAC (defaults to current tenant)|string|`null`|
+|aks_aad_client_app_id|App ID of the client application used for AAD RBAC|string|`null`|
+|aks_aad_server_app_id|App ID of the server application used for AAD RBAC|string|`null`|
+|aks_aad_server_app_secret|App Secret of the server application used for AAD RBAC|string|`null`|
+|enable_aks_calico|Flag used to enable Calico CNI (Ignored if enable_aks_advanced_networking is true)|bool|`false`|
+|enable_aks_advanced_networking|Flag used to enable Azure CNI|bool|`false`|
+|aks_subnet_name|Name of the subnet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|string|`null`|
+|aks_subnet_vnet_name|Name of the aks_subnet_name's VNet for Azure CNI (Ignored if enable_aks_advanced_networking is false)|string|`null`|
+|aks_subnet_vnet_resource_group_name|Name of the resource group for aks_subnet_vnet_name for Azure CNI (Ignored if enable_aks_advanced_networking is false)|string|`null`|
+|aks_service_cidr|Service CIDR for AKS|string|`"10.0.0.0/16"`|
+|aks_node_size|Size of nodes in the AKS cluster|string|`"Standard_B2ms"`|
+|aks_node_min_count|Minimum number of nodes in the AKS cluster|number|`1`|
+|aks_node_max_count|Maximum number of nodes in the AKS cluster|number|`1`|
+|aks_nginx_ingress_values_file|Path to a custom values file used to deploy Nginx Ingress|string|`""`|
+|aks_nginx_ingress_chart_version|The chart version for the nginx-ingress Helm chart|string|`"1.29.2"`|
 
 ## Outputs
 
