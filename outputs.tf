@@ -59,7 +59,7 @@ output "aks_kubeconfig_client_key" {
 ########################
 # AKS Cluster AD Groups
 ########################
-output "aks_ad_groups" {
+output "aks_aad_groups" {
   description = "Provides details of the AAD groups used for accessing and managing the AKS Cluster"
   value = length(local.aad_kubernetes_groups) > 0 ? {
     for group, role in local.aad_kubernetes_groups :

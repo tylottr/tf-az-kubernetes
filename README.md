@@ -1,5 +1,9 @@
 # Terraform: Azure Kubernetes
 
+> **NOTE:** This repository may be archived soon as I believe the resources being built have been brought to a state that does not necessarily require a full-blown module.
+
+> **NOTE:** Due to a known Cycle-related issue, there will be issues with destruction. See [Known Issues](##Known-Issues) for more information.
+
 This template will create a Kubernetes environment and bootstrap it so it is ready for use.
 
 The environment deployed contains the following resources:
@@ -38,7 +42,7 @@ These are the variables used along with their defaults. For any without a value 
 **Global Variables**
 
 |Variable Name|Description|Type|Default Value|
-|-|-|-|
+|-|-|-|-|
 |tenant_id|The tenant id of this deployment|string|`null`|
 |subscription_id|The subscription id of this deployment|string|`null`|
 |client_id|The client id used to authenticate to Azure|string|`null`|
@@ -51,7 +55,7 @@ These are the variables used along with their defaults. For any without a value 
 **Resource-Specific Variables**
 
 |Variable Name|Description|Type|Default Value|
-|-|-|-|
+|-|-|-|-|
 |enable_acr|Flag used to enable ACR|bool|`false`|
 |acr_sku|SKU of the ACR|string|`"Basic"`|
 |acr_georeplication_locations|Georeplication locations for ACR (Premium tier required)|list|`[]`|
@@ -91,7 +95,7 @@ This template will output the following information:
 |aks_kubeconfig_cluster_ca_certificate|AKS Cluster CA Certificate|
 |aks_kubeconfig_client_certificate|AKS Cluster Client Certificate|
 |aks_kubeconfig_client_key|AKS Cluster Client Key|
-|aks_ad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
+|aks_aad_groups|Provides details of the AAD groups used for accessing and managing the AKS Cluster|
 |acr_id|Resource ID of the container registry|
 |acr_name|Name of the container registry|
 |acr_login_server|Login server of the container registry|
@@ -117,7 +121,20 @@ In the event the deployment needs to be destroyed, you can run `terraform destro
 
 ## Known Issues
 
-**Provider produced inconsistent final plan on first Apply** with `azurerm_monitor_diagnostic_setting.main_aks[0]` is related to https://github.com/terraform-providers/terraform-provider-azurerm/issues/6254
+**Cycle Error on Destroy** occurs due to how the template is built. This is due to the following portion of the documentation [here](https://www.terraform.io/docs/providers/kubernetes/index.html#stacking-with-managed-kubernetes-cluster-resources). As of Terraform v0.13 this will render Destroy operations impossible without first removing state via targeted destroys or `terraform state rm`. In order to address this issue in the current setup, run the below command:
+
+```bash
+# Destroy targeted resources
+terraform destroy \
+    -target kubernetes_storage_class.main_azure_file \
+    -target kubernetes_storage_class.main_azure_disk \
+    -target kubernetes_cluster_role_binding.main_oms_reader  \
+    -target kubernetes_cluster_role.main_oms_reader \
+    -target helm_release.main_ingress
+
+# Destroy everything else
+terraform destroy
+```
 
 ## Post-Deployment
 
@@ -131,7 +148,7 @@ You can connect to your new cluster using the following command: `az aks get-cre
 
 To add users to the AD groups you can either do this in-portal or through command-line. To do this with Azure CLI:
 
-1. Get the object ID of the needed group with `terraform output aks_cluster_groups`
+1. Get the object ID of the needed group with `terraform output aks_aad_groups`
 2. Add the user to the group with `az ad group member add --group <REPLACE_WITH_GROUP_OBJECT_ID> --member-id <REPLACE_WITH_GROUP_MEMBER_OBJECT_ID>`
     * To get the current user's object ID you can run `az ad signed-in-user show --output tsv --query objectId`
 
