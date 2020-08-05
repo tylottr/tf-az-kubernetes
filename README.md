@@ -1,6 +1,6 @@
 # Terraform: Azure Kubernetes
 
-> **NOTE:** This repository may be archived soon as I believe the resources being built have been brought to a state that does not necessarily require a full-blown module.
+> **NOTE:** This repository has now been archived.
 
 > **NOTE:** Due to a known Cycle-related issue, there will be issues with destruction. See [Known Issues](##Known-Issues) for more information.
 
